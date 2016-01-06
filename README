@@ -1,0 +1,6 @@
+# reinforcement-trading
+This project uses Deep Q learning on stock market and agent tries to learn trading. The goal is to check if the agent can learn to read tape. The project is dedicated to hero in life great Jesse Livermore.
+
+
+More info here:
+https://docs.google.com/document/d/12TmodyT4vZBViEbWXkUIgRW_qmL1rTW00GxSMqYGNHU/edit
