@@ -31,6 +31,7 @@ PERIOD: is the historical data period (see also Google Finance), here 10d refers
 
 #Dependencies:
 For this new project, I will use chainer. I have read a lot of good things about it on google forums. So shifting from theano to chainer. Also theano makes my life hard all the time :).
+1) https://github.com/pfnet/chainer
 #for ubuntu
 http://docs.chainer.org/en/stable/install.html
 
