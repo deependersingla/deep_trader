@@ -36,4 +36,8 @@ For this new project, I will use chainer. I have read a lot of good things about
 http://docs.chainer.org/en/stable/install.html
 
 
+#External help
+1) Deep-Q-chainer
+https://github.com/ugo-nama-kun/DQN-chainer
+
 
