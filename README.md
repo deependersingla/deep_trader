@@ -40,4 +40,7 @@ http://docs.chainer.org/en/stable/install.html
 1) Deep-Q-chainer
 https://github.com/ugo-nama-kun/DQN-chainer
 
+2) Ibpy
+https://github.com/blampe/IbPy
+
 
