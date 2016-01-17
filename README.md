@@ -32,6 +32,8 @@ PERIOD: is the historical data period (see also Google Finance), here 10d refers
 #Dependencies:
 For this new project, I will use chainer. I have read a lot of good things about it on google forums. So shifting from theano to chainer. Also theano makes my life hard all the time :).
 1) https://github.com/pfnet/chainer
+2) https://github.com/blampe/IbPy
+
 #for ubuntu
 http://docs.chainer.org/en/stable/install.html
 
@@ -39,8 +41,5 @@ http://docs.chainer.org/en/stable/install.html
 #External help
 1) Deep-Q-chainer
 https://github.com/ugo-nama-kun/DQN-chainer
-
-2) Ibpy
-https://github.com/blampe/IbPy
 
 
