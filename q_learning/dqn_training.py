@@ -19,7 +19,6 @@ class DQN_class:
     replay_size = 32  # Replay (batch) size
     target_model_update_freq = 10**4  # Target update frequancy. original
     data_size = 10**5  # Data size of history. original
-    temporality = 5
      
     #actions are 0 => do nothing, 1 -> buy, -1 sell
     def __init__(self, enable_controller=[0, 1, -1]):
@@ -31,10 +30,10 @@ class DQN_class:
 #        print "CUDA init"
 #        cuda.init()
         
-        #inputs --> 5 * 10 (with 10 temorality) + 5 (of last one hour) + 5 (of last 24 hour)
+        #inputs --> 5 * 14 (with 10 temporality) + 5 (of last one hour) + 5 (of last 24 hour)
         print "Model Building"
         self.model = FunctionSet(
-            l1=F.Linear(15*self.temporality, 500),
+            l1=F.Linear(80, 500),
             l2=F.Linear(500, 250),
             l3=F.Linear(250, 80),
             q_value=F.Linear(80, self.num_of_actions,
@@ -47,10 +46,10 @@ class DQN_class:
         self.optimizer.setup(self.model.collect_parameters())
 
         # History Data :  D=[s, a, r, s_dash, end_episode_flag]
-        self.D = [np.zeros((self.data_size, self.temporality, 15), dtype=np.uint8),
+        self.D = [np.zeros((self.data_size, 80), dtype=np.uint8),
                   np.zeros(self.data_size, dtype=np.uint8),
                   np.zeros((self.data_size, 1), dtype=np.int8),
-                  np.zeros((self.data_size, self.temporality, 15), dtype=np.uint8),
+                  np.zeros((self.data_size, 80), dtype=np.uint8),
                   np.zeros((self.data_size, 1), dtype=np.bool)]
 
     def forward(self, state, action, Reward, state_dash, episode_end):
@@ -101,10 +100,10 @@ class DQN_class:
             else:
                 replay_index = np.random.randint(0, self.data_size, (self.replay_size, 1))
 
-            s_replay = np.ndarray(shape=(self.replay_size, self.temporality, 15), dtype=np.float32)
+            s_replay = np.ndarray(shape=(self.replay_size, 80), dtype=np.float32)
             a_replay = np.ndarray(shape=(self.replay_size, 1), dtype=np.uint8)
             r_replay = np.ndarray(shape=(self.replay_size, 1), dtype=np.float32)
-            s_dash_replay = np.ndarray(shape=(self.replay_size,self.temporality, 15), dtype=np.float32)
+            s_dash_replay = np.ndarray(shape=(self.replay_size,80), dtype=np.float32)
             episode_end_replay = np.ndarray(shape=(self.replay_size, 1), dtype=np.bool)
             for i in xrange(self.replay_size):
                 s_replay[i] = np.asarray(self.D[0][replay_index[i]], dtype=np.float32)

@@ -4,4 +4,15 @@
 from q_learning.dqn_training import *
 from ib.ticker_data import *
 
-##function to filter files
+#ticket data wrting to some csv or temp array
+def get_observation():
+    pass
+
+def get_reward():
+    pass
+
+def agent_run():
+    #run agent
+    #run loop for step for training
+    #end training
+    #run for testing
