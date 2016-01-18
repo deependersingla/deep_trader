@@ -65,6 +65,10 @@ class dqn_agent:
             self.DQN.stockExperience(self.time, self.last_state, self.lastAction, reward, self.state, False)
             self.DQN.experienceReplay(self.time)
 
+        if self.DQN.initial_exploration < self.time and np.mod(self.time, self.DQN.target_model_update_freq) == 0:
+            print "########### MODEL UPDATED ######################"
+            self.DQN.target_model_update()
+
         # Simple text based visualization
         print ' Time Step %d /   ACTION  %d  /   REWARD %.1f   / EPSILON  %.6f  /   Q_max  %3f' % (self.time, self.DQN.action_to_index(action), np.sign(reward), eps, np.max(Q_now.get()))
 
