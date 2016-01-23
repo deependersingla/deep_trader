@@ -38,8 +38,6 @@ class dqn_agent:
     def agent_step(self, reward, observation):
 
         # Preproces
-        
-        # Compose State : 4-step sequential observation
         self.state = observation
         state_ = cuda.to_gpu(np.asanyarray(self.state.reshape(1, 80), dtype=np.float32))
 
