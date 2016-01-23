@@ -28,7 +28,7 @@ c.m_secType = "STK"
 c.m_exchange = "NSE"
 c.m_currency = "INR"
 
-tws.reqMktData(1,c,"",False)
+tws.reqMktData(5,c,"",False)
 sleep(10000000)
 
 print 'All done'
