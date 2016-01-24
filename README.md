@@ -42,4 +42,8 @@ http://docs.chainer.org/en/stable/install.html
 1) Deep-Q-chainer
 https://github.com/ugo-nama-kun/DQN-chainer
 
+##some questions
+1) We should use data from both exchange to predict movement (read lot of algo trader to that).
+2) We can update algo to predict quantity also as ultimate effort for an algo should be to make actual gain at the end of particular time period positive.
+
 
