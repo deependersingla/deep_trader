@@ -4,7 +4,7 @@
 from dqn_training import *
 
 
-class dqn_agent: 
+class Agent: 
     policyFrozen = False
 
     def __init__(self, lastAction):
@@ -33,7 +33,7 @@ class dqn_agent:
         self.last_state = self.state.copy()
         self.last_observation = observation
 
-        return returnAction
+        return action
 
     def agent_step(self, reward, observation):
 
@@ -79,7 +79,7 @@ class dqn_agent:
             self.last_state = self.state.copy()
             self.time += 1
 
-        return returnAction
+        return action
 
     def agent_end(self, reward):  # Episode Terminated
 

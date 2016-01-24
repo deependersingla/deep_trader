@@ -21,7 +21,7 @@ def my_callback_handler(msg):
 		newDataList += [dataStr]
 	else:
 		new_symbol = new_symbolinput[msg.reqId]
-		filename = 'minutetrades' + new_symbol + '.csv'
+		filename = new_symbol + '.csv'
 		csvfile = open('csv_data/'+ filename,'wb')
 		newDataList.insert(0,'Script, DateTime, Open, High, Low, Close, Volume, WAP, Count')
 		for item in newDataList:
