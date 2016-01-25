@@ -46,7 +46,7 @@ for i in new_symbolinput:
 	c.m_currency = "INR"
 	endtime = strftime('%Y%m%d %H:%M:%S')
 	#for reference http://www.inside-r.org/packages/cran/IBrokers/docs/reqHistoricalData
-	#for data limitation
+	#for data limitation https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
 	tws.reqHistoricalData(symbol_id,contract=c,endDateTime=endtime,
             durationStr='1 Y',
             barSizeSetting='1 day',
