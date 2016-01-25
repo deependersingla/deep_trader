@@ -17,7 +17,8 @@ def my_callback_handler(msg):
 	#pdb.set_trace();
 	if ('finished' in str(msg.date)) == False:
 		new_symbol = new_symbolinput[msg.reqId]
-		dataStr = '%s, %s, %s, %s, %s, %s, %s, %s, %s' % (new_symbol, strftime("%Y-%m-%d %H:%M:%S", localtime(int(msg.date))), msg.open, msg.high, msg.low, msg.close, msg.volume, msg.WAP, msg.count)
+		#pdb.set_trace()
+		dataStr = '%s, %s, %s, %s, %s, %s, %s, %s, %s' % (new_symbol, msg.date, msg.open, msg.high, msg.low, msg.close, msg.volume, msg.WAP, msg.count)
 		newDataList += [dataStr]
 	else:
 		new_symbol = new_symbolinput[msg.reqId]
@@ -45,9 +46,10 @@ for i in new_symbolinput:
 	c.m_currency = "INR"
 	endtime = strftime('%Y%m%d %H:%M:%S')
 	#for reference http://www.inside-r.org/packages/cran/IBrokers/docs/reqHistoricalData
+	#for data limitation
 	tws.reqHistoricalData(symbol_id,contract=c,endDateTime=endtime,
-            durationStr='1 W',
-            barSizeSetting='2 mins',
+            durationStr='1 Y',
+            barSizeSetting='1 day',
             whatToShow='TRADES',
             useRTH=0,
             formatDate=2)
