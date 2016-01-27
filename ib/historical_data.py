@@ -1,13 +1,15 @@
 from ib.opt import ibConnection, message
 from ib.ext.Contract import Contract
 from time import sleep, strftime, localtime
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from ib.ext.TickType import TickType as tt
 import pdb
 
 def error_handler(msg):
     print (msg)
 
-new_symbolinput = ['CANFINHOM', 'KSCL']
+new_symbolinput = ['CANFINHOM']
 newDataList = []
 dataDownload = []
 
@@ -18,19 +20,31 @@ def my_callback_handler(msg):
 	if ('finished' in str(msg.date)) == False:
 		new_symbol = new_symbolinput[msg.reqId]
 		#pdb.set_trace()
-		dataStr = '%s, %s, %s, %s, %s, %s, %s, %s, %s' % (new_symbol, msg.date, msg.open, msg.high, msg.low, msg.close, msg.volume, msg.WAP, msg.count)
+		dataStr = '%s, %s, %s, %s, %s, %s, %s, %s, %s' % (new_symbol, strftime("%Y-%m-%d %H:%M:%S", localtime(int(msg.date))), msg.open, msg.high, msg.low, msg.close, msg.volume, msg.WAP, msg.count)
 		newDataList += [dataStr]
-	else:
-		new_symbol = new_symbolinput[msg.reqId]
-		filename = new_symbol + '.csv'
-		csvfile = open('csv_data/'+ filename,'wb')
-		newDataList.insert(0,'Script, DateTime, Open, High, Low, Close, Volume, WAP, Count')
-		for item in newDataList:
-			csvfile.write('%s \n' % item)
-		csvfile.close()
-		newDataList = []
-		global dataDownload
-		dataDownload.append(new_symbol)
+	# else:
+	# 	new_symbol = new_symbolinput[msg.reqId]
+	# 	filename = new_symbol + '.csv'
+	# 	csvfile = open('csv_data/'+ filename,'a+')
+	# 	#newDataList.insert(0,'Script, DateTime, Open, High, Low, Close, Volume, WAP, Count')
+	# 	for item in newDataList:
+	# 		csvfile.write('%s \n' % item)
+	# 	csvfile.close()
+	# 	newDataList = []
+	# 	global dataDownload
+	# 	dataDownload.append(new_symbol)
+def write_to_csv(sym):
+	filename = sym + '.csv'
+	csvfile = open('csv_data/'+ filename,'wb')
+	s = []
+	for i in newDataList:
+		if i not in s:
+			s.append(i)
+	s.insert(0,'Script, DateTime, Open, High, Low, Close, Volume, WAP, Count')
+	for item in s:
+		csvfile.write('%s \n' % item)
+	csvfile.close()
+
 
 tws = ibConnection()
 tws.register(my_callback_handler, message.historicalData)
@@ -44,17 +58,23 @@ for i in new_symbolinput:
 	c.m_secType = "STK"
 	c.m_exchange = "NSE"
 	c.m_currency = "INR"
-	endtime = strftime('%Y%m%d %H:%M:%S')
-	#for reference http://www.inside-r.org/packages/cran/IBrokers/docs/reqHistoricalData
-	#for data limitation https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
-	tws.reqHistoricalData(symbol_id,contract=c,endDateTime=endtime,
-            durationStr='1 Y',
-            barSizeSetting='1 day',
+	number_of_days = 2500
+	for day in range(0,number_of_days,10):
+		time = datetime.now() - relativedelta(days=(2500 - day))
+		endtime = time.strftime('%Y%m%d %H:%M:%S')
+		#for reference http://www.inside-r.org/packages/cran/IBrokers/docs/reqHistoricalData
+		#for data limitation https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
+		tws.reqHistoricalData(symbol_id,contract=c,endDateTime=endtime,
+            durationStr='10 D',
+            barSizeSetting='1 min',
             whatToShow='TRADES',
-            useRTH=0,
+            useRTH=1,
             formatDate=2)
+	    #IB blocks more than 60 request per 10 minute
+		sleep(15)
+	write_to_csv(i )
+
 	symbol_id += 1
-	sleep(1)
 
 print dataDownload
 print 'All done'
