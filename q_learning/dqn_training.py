@@ -7,6 +7,7 @@ import copy
 import pickle
 import numpy as np
 import scipy.misc as spm
+import pdb
 
 from chainer import cuda, FunctionSet, Variable, optimizers
 import chainer.functions as F
@@ -15,15 +16,16 @@ import chainer.functions as F
 class DQN_class:
     # Hyper-Parameters
     gamma = 0.99  # Discount factor
-    initial_exploration = 10**4  # Initial exploratoin. original
+    initial_exploration = 10**3  # Initial exploratoin. original
     replay_size = 32  # Replay (batch) size
     target_model_update_freq = 10**4  # Target update frequancy. original
     data_size = 10**5  # Data size of history. original
      
     #actions are 0 => do nothing, 1 -> buy, -1 sell
-    def __init__(self, enable_controller=[0, 1, -1]):
+    def __init__(self, input_vector_length,enable_controller=[0, 1, 2]):
         self.num_of_actions = len(enable_controller)
         self.enable_controller = enable_controller  # Default setting : "Pong"
+        self.input_vector_length = input_vector_length
 
         print "Initializing DQN..."
 #   Initialization for Chainer 1.1.0 or older.
@@ -33,7 +35,7 @@ class DQN_class:
         #inputs --> 5 * 14 (with 10 temporality) + 5 (of last one hour) + 5 (of last 24 hour)
         print "Model Building"
         self.model = FunctionSet(
-            l1=F.Linear(80, 500),
+            l1=F.Linear(input_vector_length, 500),
             l2=F.Linear(500, 250),
             l3=F.Linear(250, 80),
             q_value=F.Linear(80, self.num_of_actions,
@@ -46,10 +48,10 @@ class DQN_class:
         self.optimizer.setup(self.model.collect_parameters())
 
         # History Data :  D=[s, a, r, s_dash, end_episode_flag]
-        self.D = [np.zeros((self.data_size, 80), dtype=np.uint8),
+        self.D = [np.zeros((self.data_size, self.input_vector_length), dtype=np.uint8),
                   np.zeros(self.data_size, dtype=np.uint8),
                   np.zeros((self.data_size, 1), dtype=np.int8),
-                  np.zeros((self.data_size, 80), dtype=np.uint8),
+                  np.zeros((self.data_size, self.input_vector_length), dtype=np.uint8),
                   np.zeros((self.data_size, 1), dtype=np.bool)]
 
     def forward(self, state, action, Reward, state_dash, episode_end):
@@ -100,10 +102,10 @@ class DQN_class:
             else:
                 replay_index = np.random.randint(0, self.data_size, (self.replay_size, 1))
 
-            s_replay = np.ndarray(shape=(self.replay_size, 80), dtype=np.float32)
+            s_replay = np.ndarray(shape=(self.replay_size, self.input_vector_length), dtype=np.float32)
             a_replay = np.ndarray(shape=(self.replay_size, 1), dtype=np.uint8)
             r_replay = np.ndarray(shape=(self.replay_size, 1), dtype=np.float32)
-            s_dash_replay = np.ndarray(shape=(self.replay_size,80), dtype=np.float32)
+            s_dash_replay = np.ndarray(shape=(self.replay_size, self.input_vector_length), dtype=np.float32)
             episode_end_replay = np.ndarray(shape=(self.replay_size, 1), dtype=np.bool)
             for i in xrange(self.replay_size):
                 s_replay[i] = np.asarray(self.D[0][replay_index[i]], dtype=np.float32)

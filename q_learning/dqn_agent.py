@@ -2,12 +2,13 @@
 ##it takes care of filtering epsilon etx
 
 from dqn_training import *
+import pdb
 
 
 class Agent: 
     policyFrozen = False
 
-    def __init__(self, lastAction):
+    def __init__(self, lastAction, input_vector_length):
         # lastAction should be [0]
         self.lastAction = lastAction
 
@@ -15,7 +16,8 @@ class Agent:
         self.epsilon = 1.0  # Initial exploratoin rate
 
         # Pick a DQN from DQN_class
-        self.DQN = DQN_class()  # Default is for "Pong".
+        self.input_vector_length = input_vector_length
+        self.DQN = DQN_class(input_vector_length = input_vector_length)  # Default is for "Pong".
 
     def agent_start(self, observation):
 
@@ -23,7 +25,7 @@ class Agent:
         # Initialize State
         #here observation is 80 neurons, 5 * 14 (with 10 temporality) + 5 (of last one hour) + 5 (of last 24 hour)
         self.state = observation
-        state_ = cuda.to_gpu(np.asanyarray(self.state.reshape(1, 80), dtype=np.float32))
+        state_ = cuda.to_gpu(np.asanyarray(self.state.reshape(1, self.input_vector_length), dtype=np.float32))
 
         # Generate an Action e-greedy
         action, Q_now = self.DQN.e_greedy(state_, self.epsilon)
@@ -39,7 +41,7 @@ class Agent:
 
         # Preproces
         self.state = observation
-        state_ = cuda.to_gpu(np.asanyarray(self.state.reshape(1, 80), dtype=np.float32))
+        state_ = cuda.to_gpu(np.asanyarray(self.state.reshape(1, self.input_vector_length), dtype=np.float32))
 
         # Exploration decays along the time sequence
         if self.policyFrozen is False:  # Learning ON/OFF
