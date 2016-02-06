@@ -17,6 +17,7 @@ from chainer import serializers
 
 import data
 import net
+from sklearn.cross_validation import train_test_split
 import pdb
 
 parser = argparse.ArgumentParser(description='Chainer example: MNIST')
@@ -31,8 +32,8 @@ parser.add_argument('--gpu', '-g', default=-1, type=int,
 args = parser.parse_args()
 
 batchsize = 500
-n_epoch = 20
-n_units = 1000
+n_epoch = 50
+n_units = 200
 
 # Prepare dataset
 print('load STOCK dataset')
@@ -42,8 +43,11 @@ mnist['data'] = mnist['data'].astype(np.float32)
 mnist['target'] = mnist['target'].astype(np.int32)
 
 N = 300000
-x_train, x_test = np.split(mnist['data'],   [N])
-y_train, y_test = np.split(mnist['target'], [N])
+#x_train, x_test = np.split(mnist['data'],   [N])
+#y_train, y_test = np.split(mnist['target'], [N])
+# np.where(y_train==1)[0].shape
+#pdb.set_trace()
+x_train, x_test, y_train, y_test = train_test_split(mnist['data'], mnist['target'], test_size=0.30, random_state=123)
 N_test = y_test.size
 
 # Prepare multi-layer perceptron model, defined in net.py

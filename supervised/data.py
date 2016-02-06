@@ -10,6 +10,7 @@ from sklearn.cross_validation import train_test_split
 from sklearn import preprocessing
 import numpy as np
 import dateutil.parser
+import pdb
 #ticket data wrting to some csv or temp array
 
 def prepare_data(scrip_id):
@@ -33,6 +34,7 @@ def prepare_data(scrip_id):
         final_date = dateutil.parser.parse(data["DateTime"]).date()
         intial_date = dateutil.parser.parse(intial_data["DateTime"]).date()
         if final_date != intial_date:
+            #pdb.set_trace()
             opening_price = data["Open"]
             closing_price = intial_data["Close"]
             gain = (opening_price - closing_price) / closing_price
@@ -40,10 +42,12 @@ def prepare_data(scrip_id):
             #new_value = ( (old_value - old_min) / (old_max - old_min) ) * (new_max - new_min) + new_min
             daily_gain = ((gain - (-1)) / (1 - (-1)) ) * (1 - 0) + 0
         if daily_gain is not None:
+
             #TODO can use this place for standardization also
             list_data = [daily_gain,intial_data["Low"], intial_data["High"], intial_data["Close"], intial_data["Open"], intial_data["Volume"]]
             output_data.append(output)
             new_data_list.append(list_data)
+        intial_data = data
     stock_data = np.asarray(new_data_list)
     output_data = np.asarray(output_data)
     supervised_data["data"] = stock_data
