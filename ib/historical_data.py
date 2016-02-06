@@ -9,7 +9,8 @@ import pdb
 def error_handler(msg):
     print (msg)
 
-new_symbolinput = ['CANFINHOM']
+new_symbolinput = ['CANFINHOM', 'KSCL', 'AJP', 'GRUH', 'GREENPLY', 'GRANULES', 'SBIN', 'SHILPAMED', 'SHEMAROO', 'TCS', 'TITAN', 'TORNTPHAR', 'TORNTPOWE', 'SHARONBIO', 'MANAPPURA', 'MAYURUNIQ', 'MPSLTD', 'MUTHOOTFI', 'ATULAUTO', 'AVANTIFEE']
+#for symbol
 newDataList = []
 dataDownload = []
 
@@ -65,8 +66,8 @@ for i in new_symbolinput:
 		#for reference http://www.inside-r.org/packages/cran/IBrokers/docs/reqHistoricalData
 		#for data limitation https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
 		tws.reqHistoricalData(symbol_id,contract=c,endDateTime=endtime,
-            durationStr='10 D',
-            barSizeSetting='1 min',
+            durationStr='20 D',
+            barSizeSetting='2 min',
             whatToShow='TRADES',
             useRTH=1,
             formatDate=2)
