@@ -18,7 +18,7 @@ class DQN_class:
     gamma = 0.99  # Discount factor
     initial_exploration = 10**3  # Initial exploratoin. original
     replay_size = 32  # Replay (batch) size
-    target_model_update_freq = 10**4  # Target update frequancy. original
+    target_model_update_freq = 10**2  # Target update frequancy. original
     data_size = 10**5  # Data size of history. original
      
     #actions are 0 => do nothing, 1 -> buy, -1 sell
@@ -144,7 +144,10 @@ class DQN_class:
             print "GREEDY"
 
         return self.index_to_action(index_action), Q
-
+    
+    def target_model_update(self):
+        self.model_target = copy.deepcopy(self.model)
+    
     def index_to_action(self, index_of_action):
         return self.enable_controller[index_of_action]
 

@@ -77,7 +77,7 @@ class PortfolioAgent:
 		action = self.AGENT.agent_start(self.make_input_vector())
 		reward = self.find_reward(action)
 		epoch = 0
-		n_epoch = 10000
+		n_epoch = 100000
 		while (epoch < n_epoch):
 			self.stock_data = np.vstack([self.stock_data, self.other_stored_data[0]])
 			self.other_stored_data = np.delete(self.other_stored_data, [0],0)
