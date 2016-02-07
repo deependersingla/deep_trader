@@ -9,9 +9,9 @@ import pdb
 def error_handler(msg):
     print (msg)
 
-new_symbolinput = ['CANFINHOM', 'KSCL', 'AJP', 'GRUH', 'GREENPLY', 'GRANULES', 'SBIN', 'SHILPAMED', 'SHEMAROO', 'TCS', 'TITAN', 'TORNTPHAR', 'TORNTPOWE', 'SHARONBIO', 'MANAPPURA', 'MAYURUNIQ', 'MPSLTD', 'MUTHOOTFI', 'ATULAUTO', 'AVANTIFEE']
+#new_symbolinput = ['CANFINHOM', 'KSCL', 'AJP', 'GRUH', 'GREENPLY', 'GRANULES', 'SBIN', 'SHILPAMED', 'SHEMAROO', 'TCS', 'TITAN', 'TORNTPHAR', 'TORNTPOWE', 'SHARONBIO', 'MANAPPURA', 'MAYURUNIQ', 'MPSLTD', 'MUTHOOTFI', 'ATULAUTO', 'AVANTIFEE']
 #for symbol
-#new_symbolinput = ['CANFINHOM', 'AJP', 'GRUH']
+new_symbolinput = ['TITAN', 'TORNTPHAR', 'TORNTPOWE', 'SHARONBIO', 'MANAPPURA', 'MAYURUNIQ', 'MPSLTD', 'MUTHOOTFI', 'ATULAUTO', 'AVANTIFEE']
 newDataList = []
 dataDownload = []
 

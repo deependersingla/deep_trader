@@ -31,9 +31,9 @@ parser.add_argument('--gpu', '-g', default=-1, type=int,
                     help='GPU ID (negative value indicates CPU)')
 args = parser.parse_args()
 
-batchsize = 200
+batchsize = 100
 n_epoch = 50
-n_units = 500
+n_units = 200
 
 # Prepare dataset
 print('load STOCK dataset')
