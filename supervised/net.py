@@ -5,9 +5,7 @@ import chainer.links as L
 
 class MnistMLP(chainer.Chain):
 
-    """An example of multi-layer perceptron for MNIST dataset.
-    This is a very simple implementation of an MLP. You can modify this code to
-    build your own neural net.
+    """A network for multi-layer perceptron.
     """
     def __init__(self, n_in, n_units, n_out):
         super(MnistMLP, self).__init__(

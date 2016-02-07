@@ -31,9 +31,9 @@ parser.add_argument('--gpu', '-g', default=-1, type=int,
                     help='GPU ID (negative value indicates CPU)')
 args = parser.parse_args()
 
-batchsize = 500
+batchsize = 200
 n_epoch = 50
-n_units = 200
+n_units = 500
 
 # Prepare dataset
 print('load STOCK dataset')
@@ -42,24 +42,25 @@ mnist['data'] = mnist['data'].astype(np.float32)
 #mnist['data'] /= 255
 mnist['target'] = mnist['target'].astype(np.int32)
 
-N = 300000
+#N = 300000
 #x_train, x_test = np.split(mnist['data'],   [N])
 #y_train, y_test = np.split(mnist['target'], [N])
 # np.where(y_train==1)[0].shape
 #pdb.set_trace()
 x_train, x_test, y_train, y_test = train_test_split(mnist['data'], mnist['target'], test_size=0.30, random_state=123)
+N = x_train.shape[0]
 N_test = y_test.size
 
 # Prepare multi-layer perceptron model, defined in net.py
 if args.net == 'simple':
-    model = L.Classifier(net.MnistMLP(6, n_units, 3))
+    model = L.Classifier(net.MnistMLP(61, n_units, 3))
     if args.gpu >= 0:
         cuda.get_device(args.gpu).use()
         model.to_gpu()
     xp = np if args.gpu < 0 else cuda.cupy
 elif args.net == 'parallel':
     cuda.check_cuda_available()
-    model = L.Classifier(net.MnistMLPParallel(6, n_units, 3))
+    model = L.Classifier(net.MnistMLPParallel(61, n_units, 3))
     xp = cuda.cupy
 
 # Setup optimizer
@@ -122,3 +123,4 @@ print('save the model')
 serializers.save_npz('mlp.model', model)
 print('save the optimizer')
 serializers.save_npz('mlp.state', optimizer)
+#python train_stock.py --gpu=0

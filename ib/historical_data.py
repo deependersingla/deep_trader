@@ -11,6 +11,7 @@ def error_handler(msg):
 
 new_symbolinput = ['CANFINHOM', 'KSCL', 'AJP', 'GRUH', 'GREENPLY', 'GRANULES', 'SBIN', 'SHILPAMED', 'SHEMAROO', 'TCS', 'TITAN', 'TORNTPHAR', 'TORNTPOWE', 'SHARONBIO', 'MANAPPURA', 'MAYURUNIQ', 'MPSLTD', 'MUTHOOTFI', 'ATULAUTO', 'AVANTIFEE']
 #for symbol
+#new_symbolinput = ['CANFINHOM', 'AJP', 'GRUH']
 newDataList = []
 dataDownload = []
 
@@ -66,14 +67,15 @@ for i in new_symbolinput:
 		#for reference http://www.inside-r.org/packages/cran/IBrokers/docs/reqHistoricalData
 		#for data limitation https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
 		tws.reqHistoricalData(symbol_id,contract=c,endDateTime=endtime,
-            durationStr='20 D',
-            barSizeSetting='2 min',
+            durationStr='10 D',
+            barSizeSetting='2 mins',
             whatToShow='TRADES',
             useRTH=1,
             formatDate=2)
 	    #IB blocks more than 60 request per 10 minute
 		sleep(15)
-	write_to_csv(i )
+	write_to_csv(i)
+	newDataList = []
 
 	symbol_id += 1
 
