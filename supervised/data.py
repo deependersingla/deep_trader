@@ -12,8 +12,9 @@ import numpy as np
 import dateutil.parser
 import pdb
 import glob
+import cPickle as pickle
 
-def prepare_data(scrip_id):
+def prepare_data():
     supervised_data = {}
     output_data = []
     new_data_list  = []
@@ -82,4 +83,10 @@ def find_average(data):
 
 
 def load_stock_data():
-    return prepare_data("CANFINHOM")
+    if not os.path.exists('stock_data.txt'):
+        dictonary =  prepare_data()
+        with open("stock_data.txt", "wb") as myFile:
+            pickle.dump(dictonary, myFile)
+    with open('stock_data.txt', 'rb') as myFile:
+        data = pickle.load(myFile)
+    return data
