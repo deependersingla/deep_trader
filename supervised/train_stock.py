@@ -48,7 +48,9 @@ mnist['target'] = mnist['target'].astype(np.int32)
 # np.where(y_train==1)[0].shape
 #pdb.set_trace()
 x_train, x_test, y_train, y_test = train_test_split(mnist['data'], mnist['target'], test_size=0.30, random_state=123)
-#pdb.set_trace();
+print("Buying percentage test={}, train={}".format(np.where(y_train==1)[0].shape[0]*100/y_train.shape[0],np.where(y_test==1)[0].shape[0]*100/y_test.shape[0]))
+print("Shorting percentage test={}, train={}".format(np.where(y_train==2)[0].shape[0]*100/y_train.shape[0],np.where(y_test==2)[0].shape[0]*100/y_test.shape[0]))
+print("Holding percentage test={}, train={}".format(np.where(y_train==0)[0].shape[0]*100/y_train.shape[0],np.where(y_test==0)[0].shape[0]*100/y_test.shape[0]))
 N = x_train.shape[0]
 N_test = y_test.size
 

@@ -94,6 +94,6 @@ def load_stock_data():
         with open("stock.pkl", "wb") as myFile:
             six.moves.cPickle.dump(dictonary, myFile, -1)
     with open('stock.pkl', 'rb') as myFile:
-        data = six.moves.cPickle.load(mnist_pickle)
+        data = six.moves.cPickle.load(myFile)
     #pdb.set_trace();
     return data
