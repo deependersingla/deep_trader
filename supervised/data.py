@@ -13,12 +13,16 @@ import dateutil.parser
 import pdb
 import glob
 import cPickle as pickle
+import shelve
+import six
+from six.moves.urllib import request
 
 def prepare_data():
     supervised_data = {}
     output_data = []
     new_data_list  = []
     files = glob.glob("/home/deep/development/deep_trading/ib/csv_data/*.csv")
+    #files = ["/home/deep/development/deep_trading/ib/csv_data/KSCL.csv"]
     for file in files:
         stock_data = genfromtxt(file, delimiter=',', dtype=None, names=True)
         output = None
@@ -52,6 +56,8 @@ def prepare_data():
                 input_vector = make_supervised_vector(last_n_data, daily_gain)
                 #list_data = [daily_gain,intial_data["Low"], intial_data["High"], intial_data["Close"], intial_data["Open"], intial_data["Volume"]]
                 output_data.append(output)
+                #if daily_gain > 0.5:
+                    #pdb.set_trace()
                 new_data_list.append(input_vector)
             intial_data = data
     stock_data = np.asarray(new_data_list)
@@ -83,10 +89,11 @@ def find_average(data):
 
 
 def load_stock_data():
-    if not os.path.exists('stock_data.txt'):
+    if not os.path.exists('stock.pkl'):
         dictonary =  prepare_data()
-        with open("stock_data.txt", "wb") as myFile:
-            pickle.dump(dictonary, myFile)
-    with open('stock_data.txt', 'rb') as myFile:
-        data = pickle.load(myFile)
+        with open("stock.pkl", "wb") as myFile:
+            six.moves.cPickle.dump(dictonary, myFile, -1)
+    with open('stock.pkl', 'rb') as myFile:
+        data = six.moves.cPickle.load(mnist_pickle)
+    #pdb.set_trace();
     return data

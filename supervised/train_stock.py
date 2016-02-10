@@ -48,6 +48,7 @@ mnist['target'] = mnist['target'].astype(np.int32)
 # np.where(y_train==1)[0].shape
 #pdb.set_trace()
 x_train, x_test, y_train, y_test = train_test_split(mnist['data'], mnist['target'], test_size=0.30, random_state=123)
+#pdb.set_trace();
 N = x_train.shape[0]
 N_test = y_test.size
 
