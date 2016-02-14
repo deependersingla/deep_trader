@@ -11,15 +11,21 @@ class MnistMLP(chainer.Chain):
         super(MnistMLP, self).__init__(
             l1=L.Linear(n_in, n_units),
             l2=L.Linear(n_units, n_units),
-            l3=L.Linear(n_units,50),
-            l4=L.Linear(50, n_out),
+            l3=L.Linear(n_units,200),
+            l4=L.Linear(200,100),
+            l5=L.Linear(100,50),
+            l6=L.Linear(50, 20),
+            l7=L.Linear(20, n_out),
         )
 
     def __call__(self, x):
         h1 = F.relu(self.l1(x))
         h2 = F.relu(self.l2(h1))
         h3 = F.relu(self.l3(h2))
-        return self.l4(h3)
+        h4 = F.relu(self.l4(h3))
+        h5 = F.relu(self.l5(h4))
+        h6 = F.relu(self.l6(h5))
+        return self.l7(h6)
 
 
 class MnistMLPParallel(chainer.Chain):

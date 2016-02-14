@@ -32,8 +32,8 @@ parser.add_argument('--gpu', '-g', default=-1, type=int,
 args = parser.parse_args()
 
 batchsize = 100
-n_epoch = 50
-n_units = 200
+n_epoch = 1
+n_units = 500
 
 # Prepare dataset
 print('load STOCK dataset')
@@ -48,9 +48,14 @@ mnist['target'] = mnist['target'].astype(np.int32)
 # np.where(y_train==1)[0].shape
 #pdb.set_trace()
 x_train, x_test, y_train, y_test = train_test_split(mnist['data'], mnist['target'], test_size=0.30, random_state=123)
+#pdb.set_trace();
 print("Buying percentage test={}, train={}".format(np.where(y_train==1)[0].shape[0]*100/y_train.shape[0],np.where(y_test==1)[0].shape[0]*100/y_test.shape[0]))
 print("Shorting percentage test={}, train={}".format(np.where(y_train==2)[0].shape[0]*100/y_train.shape[0],np.where(y_test==2)[0].shape[0]*100/y_test.shape[0]))
 print("Holding percentage test={}, train={}".format(np.where(y_train==0)[0].shape[0]*100/y_train.shape[0],np.where(y_test==0)[0].shape[0]*100/y_test.shape[0]))
+#running only for 1
+#temp_1_test = np.where(y_test==1)[0]
+#y_test =  y_test[temp_1_test]
+#x_test = x_test[temp_1_test]
 N = x_train.shape[0]
 N_test = y_test.size
 
@@ -73,10 +78,10 @@ optimizer.setup(model)
 # Init/Resume
 if args.initmodel:
     print('Load model from', args.initmodel)
-    serializers.load_npz(args.initmodel, model)
+    serializers.load_hdf5(args.initmodel, model)
 if args.resume:
     print('Load optimizer state from', args.resume)
-    serializers.load_npz(args.resume, optimizer)
+    serializers.load_hdf5(args.resume, optimizer)
 
 # Learning loop
 for epoch in six.moves.range(1, n_epoch + 1):
@@ -123,7 +128,7 @@ for epoch in six.moves.range(1, n_epoch + 1):
 
 # Save the model and the optimizer
 print('save the model')
-serializers.save_npz('mlp.model', model)
+serializers.save_hdf5('mlp.model', model)
 print('save the optimizer')
-serializers.save_npz('mlp.state', optimizer)
+serializers.save_hdf5('mlp.state', optimizer)
 #python train_stock.py --gpu=0

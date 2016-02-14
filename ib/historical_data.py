@@ -9,9 +9,9 @@ import pdb
 def error_handler(msg):
     print (msg)
 
-#new_symbolinput = ['CANFINHOM', 'KSCL', 'AJP', 'GRUH', 'GREENPLY', 'GRANULES', 'SBIN', 'SHILPAMED', 'SHEMAROO', 'TCS', 'TITAN', 'TORNTPHAR', 'TORNTPOWE', 'SHARONBIO', 'MANAPPURA', 'MAYURUNIQ', 'MPSLTD', 'MUTHOOTFI', 'ATULAUTO', 'AVANTIFEE']
+new_symbolinput = ['CANFINHOM', 'KSCL', 'AJP', 'GRUH', 'GREENPLY', 'GRANULES', 'SBIN', 'SHILPAMED', 'SHEMAROO', 'TCS', 'TITAN', 'TORNTPHAR', 'TORNTPOWE', 'SHARONBIO', 'MANAPPURA', 'MAYURUNIQ', 'MPSLTD', 'MUTHOOTFI', 'ATULAUTO', 'AVANTIFEE']
 #for symbol
-new_symbolinput = ['TITAN', 'TORNTPHAR', 'TORNTPOWE', 'SHARONBIO', 'MANAPPURA', 'MAYURUNIQ', 'MPSLTD', 'MUTHOOTFI', 'ATULAUTO', 'AVANTIFEE']
+new_symbolinput = ['GRUH', 'GREENPLY', 'GRANULES', 'SBIN', 'SHILPAMED', 'SHEMAROO', 'TCS', 'TITAN', 'TORNTPHAR', 'TORNTPOWE', 'SHARONBIO', 'MANAPPURA', 'MAYURUNIQ', 'MPSLTD', 'MUTHOOTFI', 'ATULAUTO', 'AVANTIFEE']
 newDataList = []
 dataDownload = []
 
@@ -37,7 +37,7 @@ def my_callback_handler(msg):
 	# 	dataDownload.append(new_symbol)
 def write_to_csv(sym):
 	filename = sym + '.csv'
-	csvfile = open('csv_data/'+ filename,'wb')
+	csvfile = open('ftr_csv/'+ filename,'wb')
 	s = []
 	for i in newDataList:
 		if i not in s:
@@ -68,7 +68,7 @@ for i in new_symbolinput:
 		#for data limitation https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
 		tws.reqHistoricalData(symbol_id,contract=c,endDateTime=endtime,
             durationStr='10 D',
-            barSizeSetting='2 mins',
+            barSizeSetting='5 mins',
             whatToShow='TRADES',
             useRTH=1,
             formatDate=2)
