@@ -16,7 +16,7 @@ from chainer import optimizers
 from chainer import serializers
 
 import data
-import net
+import net_analog
 from sklearn.cross_validation import train_test_split
 import pdb
 
@@ -40,7 +40,7 @@ print('load STOCK dataset')
 mnist = data.load_stock_data()
 mnist['data'] = mnist['data'].astype(np.float32)
 #mnist['data'] /= 255
-mnist['target'] = mnist['target'].astype(np.int32)
+mnist['target'] = mnist['target'].astype(np.float32)
 
 #N = 300000
 #x_train, x_test = np.split(mnist['data'],   [N])
@@ -56,12 +56,14 @@ print("Holding percentage test={}, train={}".format(np.where(y_train==0)[0].shap
 #temp_1_test = np.where(y_test==1)[0]
 #y_test =  y_test[temp_1_test]
 #x_test = x_test[temp_1_test]
+y_train = np.reshape(y_train, (y_train.shape[0],1))
+y_test = np.reshape(y_test, (y_test.shape[0],1))
 N = x_train.shape[0]
 N_test = y_test.size
 
-# Prepare multi-layer perceptron model, defined in net.py
+# Prepare multi-layer perceptron model, defined in net_analog.py
 if args.net == 'simple':
-    model = L.Classifier(net.MnistMLP(61, n_units, 3))
+    model = (net_analog.MnistMLP(61, n_units, 1))
     if args.gpu >= 0:
         cuda.get_device(args.gpu).use()
         model.to_gpu()
@@ -72,7 +74,17 @@ elif args.net == 'parallel':
     xp = cuda.cupy
 
 # Setup optimizer
-optimizer = optimizers.Adam()
+if 'opt' in args:
+#Todo can also pass arguments to each optimizer, see https://github.com/mitmul/chainer-cifar10/blob/master/train.py#L62
+    if args.opt == 'MomentumSGD':
+        optimizer = optimizers.MomentumSGD()
+    elif args.opt == 'AdaGrad':
+            optimizer = optimizers.AdaGrad()
+    elif args.opt == 'Adam':
+        optimizer = optimizers.Adam()
+else:
+    optimizer = optimizers.Adam()
+
 optimizer.setup(model)
 
 # Init/Resume
@@ -106,25 +118,25 @@ for epoch in six.moves.range(1, n_epoch + 1):
             print('graph generated')
 
         sum_loss += float(model.loss.data) * len(t.data)
-        sum_accuracy += float(model.accuracy.data) * len(t.data)
+        #sum_accuracy += float(model.accuracy.data) * len(t.data)
 
     print('train mean loss={}, accuracy={}'.format(
         sum_loss / N, sum_accuracy / N))
 
-    # evaluation
-    sum_accuracy = 0
-    sum_loss = 0
-    for i in six.moves.range(0, N_test, batchsize):
-        x = chainer.Variable(xp.asarray(x_test[i:i + batchsize]),
-                             volatile='on')
-        t = chainer.Variable(xp.asarray(y_test[i:i + batchsize]),
-                             volatile='on')
-        loss = model(x, t)
-        sum_loss += float(loss.data) * len(t.data)
-        sum_accuracy += float(model.accuracy.data) * len(t.data)
+    # # evaluation
+    # #sum_accuracy = 0
+    # #sum_loss = 0
+    # for i in six.moves.range(0, N_test, batchsize):
+    #     x = chainer.Variable(xp.asarray(x_test[i:i + batchsize]),
+    #                          volatile='on')
+    #     t = chainer.Variable(xp.asarray(y_test[i:i + batchsize]),
+    #                          volatile='on')
+    #     loss = model(x, t)
+    #     sum_loss += float(loss.data) * len(t.data)
+    #     #sum_accuracy += float(model.accuracy.data) * len(t.data)
 
-    print('test  mean loss={}, accuracy={}'.format(
-        sum_loss / N_test, sum_accuracy / N_test))
+    # print('test  mean loss={}, accuracy={}'.format(
+    #     sum_loss / N_test, sum_accuracy / N_test))
 
 # Save the model and the optimizer
 print('save the model')

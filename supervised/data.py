@@ -92,12 +92,11 @@ def find_average(data):
 
 
 def load_stock_data():
-    if not os.path.exists('stock.pkl'):
+    if not os.path.exists('stock_cont.pkl'):
         dictonary =  prepare_data()
-        pdb.set_trace();
-        with open("stock.pkl", "wb") as myFile:
+        with open("stock_cont.pkl", "wb") as myFile:
             six.moves.cPickle.dump(dictonary, myFile, -1)
-    with open('stock.pkl', 'rb') as myFile:
+    with open('stock_cont.pkl', 'rb') as myFile:
         data = six.moves.cPickle.load(myFile)
     #pdb.set_trace();
     return data

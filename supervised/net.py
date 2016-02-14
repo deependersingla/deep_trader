@@ -14,8 +14,8 @@ class MnistMLP(chainer.Chain):
             l3=L.Linear(n_units,200),
             l4=L.Linear(200,100),
             l5=L.Linear(100,50),
-            l6=L.Linear(50, 20),
-            l7=L.Linear(20, n_out),
+            l6=L.Linear(50, 10),
+            l7=L.Linear(10, n_out),
         )
 
     def __call__(self, x):
