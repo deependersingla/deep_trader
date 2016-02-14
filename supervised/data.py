@@ -34,12 +34,15 @@ def prepare_data():
             final_value = data['Low']
             intial_value = intial_data['High']
             #can also add transaction fee
-            if (final_value > intial_value):
-                output = 1 #should have bought
-            elif (final_value < intial_value):
-                output = 2 #should have sold 
-            else:
-                output = 0 #should have done nothing
+            # if (final_value > intial_value):
+            #     output = 1 #should have bought
+            # elif (final_value < intial_value):
+            #     output = 2 #should have sold 
+            # else:
+            #     output = 0 #should have done nothing
+            percent_gain = (final_value - intial_value) / intial_value
+            #converting into 0 to 1
+            output = ((percent_gain - (-1)) / (1 - (-1)) ) * (1 - 0) + 0
             final_date = dateutil.parser.parse(data["DateTime"]).date()
             intial_date = dateutil.parser.parse(intial_data["DateTime"]).date()
             last_n_data.append([intial_data["Low"], intial_data["High"], intial_data["Close"], intial_data["Open"], intial_data["Volume"]])
