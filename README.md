@@ -47,3 +47,6 @@ https://github.com/ugo-nama-kun/DQN-chainer
 2) We can update algo to predict quantity also as ultimate effort for an algo should be to make actual gain at the end of particular time period positive.
 
 
+###for reading
+https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
+

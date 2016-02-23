@@ -21,7 +21,7 @@ def prepare_data():
     supervised_data = {}
     output_data = []
     new_data_list  = []
-    files = glob.glob("/home/deep/development/deep_trading/ib/csv_data/*.csv")
+    files = glob.glob("/home/deep/development/deep_trading/ib/ftr_csv/*.csv")
     #files = ["/home/deep/development/deep_trading/ib/csv_data/KSCL.csv"]
     for file in files:
         stock_data = genfromtxt(file, delimiter=',', dtype=None, names=True)
@@ -34,15 +34,15 @@ def prepare_data():
             final_value = data['Low']
             intial_value = intial_data['High']
             #can also add transaction fee
-            # if (final_value > intial_value):
-            #     output = 1 #should have bought
-            # elif (final_value < intial_value):
-            #     output = 2 #should have sold 
-            # else:
-            #     output = 0 #should have done nothing
-            percent_gain = (final_value - intial_value) / intial_value
+            if (final_value > intial_value):
+                output = 1 #should have bought
+            elif (final_value < intial_value):
+                output = 2 #should have sold 
+            else:
+                output = 0 #should have done nothing
+            #percent_gain = (final_value - intial_value) / intial_value
             #converting into 0 to 1
-            output = ((percent_gain - (-1)) / (1 - (-1)) ) * (1 - 0) + 0
+            #output = ((percent_gain - (-1)) / (1 - (-1)) ) * (1 - 0) + 0
             final_date = dateutil.parser.parse(data["DateTime"]).date()
             intial_date = dateutil.parser.parse(intial_data["DateTime"]).date()
             last_n_data.append([intial_data["Low"], intial_data["High"], intial_data["Close"], intial_data["Open"], intial_data["Volume"]])
@@ -92,9 +92,9 @@ def find_average(data):
 
 
 def load_stock_data():
-    if not os.path.exists('stock_cont.pkl'):
+    if not os.path.exists('stock_5.pkl'):
         dictonary =  prepare_data()
-        with open("stock_cont.pkl", "wb") as myFile:
+        with open("stock_5.pkl", "wb") as myFile:
             six.moves.cPickle.dump(dictonary, myFile, -1)
     with open('stock_cont.pkl', 'rb') as myFile:
         data = six.moves.cPickle.load(myFile)

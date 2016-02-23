@@ -29,6 +29,11 @@ parser.add_argument('--net', '-n', choices=('simple', 'parallel'),
                     default='simple', help='Network type')
 parser.add_argument('--gpu', '-g', default=-1, type=int,
                     help='GPU ID (negative value indicates CPU)')
+# optimization
+parser.add_argument('--opt', type=str, default='MomentumSGD',
+                        choices=['MomentumSGD', 'Adam', 'AdaGrad'])
+parser.add_argument('--alpha', type=float, default=0.001)
+parser.add_argument('--lr', type=float, default=0.01)
 args = parser.parse_args()
 
 batchsize = 200
@@ -72,7 +77,16 @@ elif args.net == 'parallel':
     xp = cuda.cupy
 
 # Setup optimizer
-optimizer = optimizers.Adam()
+if 'opt' in args:
+#Todo can also pass arguments to each optimizer, see https://github.com/mitmul/chainer-cifar10/blob/master/train.py#L62
+    if args.opt == 'MomentumSGD':
+        optimizer = optimizers.MomentumSGD(lr=args.lr, momentum=0.9)
+    elif args.opt == 'AdaGrad':
+            optimizer = optimizers.AdaGrad(lr=args.lr)
+    elif args.opt == 'Adam':
+        optimizer = optimizers.Adam(alpha=args.alpha)
+else:
+    optimizer = optimizers.Adam()
 optimizer.setup(model)
 
 # Init/Resume
@@ -121,7 +135,7 @@ for epoch in six.moves.range(1, n_epoch + 1):
                              volatile='on')
         loss = model(x, t)
         sum_loss += float(loss.data) * len(t.data)
-        sum_accuracy += float(model.accuracy.data) * len(t.data)
+        sum_accuracy += float(model.accuracy) * len(t.data)
 
     print('test  mean loss={}, accuracy={}'.format(
         sum_loss / N_test, sum_accuracy / N_test))
