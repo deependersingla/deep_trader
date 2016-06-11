@@ -1,0 +1,5 @@
+a) what will be better episodic data or continuous episode?
+My intution say episodic but i guess the only way to test this is by writing both code
+
+b) How to do data normalization?
+Common method used by people is 5 day moving average but I guess should change.
