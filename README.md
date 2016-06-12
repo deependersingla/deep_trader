@@ -8,12 +8,18 @@ on Reinforcement learning. I Coming back to project after 45 days a lot has chan
 
 
 #For the first iteration of the project
-I will go with episodic version,one reason which made me choose that:
-a) I will not have to calculate reward after every action which agent will make, I can just make terminal reward based on portfolio value after episode - inital value of portfolio - transaction cost occur inside the episode. The reason for doing it that I believe it will motivate agent to learn trading rather than to think long term. This also means that I have to check the hypothesis on different episode of different length. 
-I also have to test thypothesis that what will if i give immediate reward after every time interval and also terminal reward based on what I discussed above. All in all the project looks like a lot of hit and trial. I should better write good code and store all results properly so that I can compare them to see what works and what don't. Ofcourse the idea is to make sure agent remain profitable while trading. 
-
 #Policy network:
 I will be starting with simple feed-forward network. Though, I am also inclined to use convolutional network reason being they do very well when the minor change in input should not make a change in ouput. for example: in image recognizition, a small pixel values here and there doesn't make image change. Intutively stocks numbers to me somtime look same a small change should not trigger a trade but again the problem here comes with normalization. With normalization the big change in number will be reduced to a very small in inputs hence its good to start with feed-forward.
+
+#feed-forward
+I want to start with 2 layer first, yes that just vanilla but lets see how it works than will shift to more deeper network. On output side I will be using a sigmord non-linear function to get value out of 0 and 1 , I can actually use softmax also, this require some thinking. In hidden layer all neurons will be RELU. With 2 layers, I am assuming that first layer w1 can decide whether market is bullish, bearish and stable. 2nd layer can then decide what action to take based on based layer.
+
+#training:
+We will run x episode of training and each will have y time interval on it. so our policy network will have to make x*y times decision of whether to hold, buy or short. After this based on our reward we will label every decison whether it was good/bad and update network. We will again run x episode on the improved network and we will keep doing it. Like MCTS algo of when things will average out to optimality our policy also will start making positive decision and less negative decision even though in training we will see policy wrong choices but on average it will work out because we will do same thing million times.
+
+#Episodic 
+I plan to start with episodic training rather than continous training. The major reason for this is that I will not have to calculate reward after every action which agent will make, I can just make terminal reward based on portfolio value after episode - inital value of portfolio - transaction cost occur inside the episode. The reason for doing it that I believe it will motivate agent to learn trading rather than to think long term. This also means that I have to check the hypothesis on different episode of different length. 
+I also have to test thypothesis that what will if i give immediate reward after every time interval and also terminal reward based on what I discussed above. All in all the project looks like a lot of hit and trial. I should better write good code and store all results properly so that I can compare them to see what works and what don't. Ofcourse the idea is to make sure agent remain profitable while trading. 
 
 
 More info here:
@@ -49,7 +55,7 @@ PERIOD: is the historical data period (see also Google Finance), here 10d refers
 3) https://github.com/blampe/IbPy
 
 External help
-1)
+1) https://github.com/nivwusquorum/tensorflow-deepq
 2) Deep-Q-chainer
 https://github.com/ugo-nama-kun/DQN-chainer
 
@@ -58,7 +64,7 @@ https://github.com/ugo-nama-kun/DQN-chainer
 https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
 
 #Reinforcement learning resources
-https://github.com/aikorea/awesome-rl
+https://github.com/aikorea/awesome-rl , this is enough if you are serious
 
 
 
