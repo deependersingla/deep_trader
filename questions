@@ -3,3 +3,9 @@ My intution say episodic but i guess the only way to test this is by writing bot
 
 b) How to do data normalization?
 Common method used by people is 5 day moving average but I guess should change.
+
+c) We should use data from both exchange to predict movement (read lot of algo trader to that).
+I will be starting with Sensex data so exchange thing is not applicable, thought I might use sensex future also in the input.
+
+d) We can update algo to predict quantity also as ultimate effort for an algo should be to make actual gain at the end of particular time period positive.
+Yes, this is nice to have once I get intiall successes

@@ -1,10 +1,20 @@
-# reinforcement-trading
+#Reinforcement-trading
 This project uses Deep Q learning on stock market and agent tries to learn trading. The goal is to check if the agent can learn to read tape. The project is dedicated to hero in life great Jesse Livermore.
 
 
 Process:
 a) Intially I started by using chainer for the project for both supervised and reinforcement learning. In middle of it AlphaGo (https://research.googleblog.com/2016/01/alphago-mastering-ancient-game-of-go.html) came, so I shifted to read Sutton book (https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html), AlphaGo paper and related paper, David Silver lectures (http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html, they are great)
 on Reinforcement learning. I Coming back to project after 45 days a lot has changed in TensorFlow all the cool kids (even Deepmind) have started using it. Hence, I am ditching chainer and will use tensorflow from now. Exciting times ahead.
+
+
+#For the first iteration of the project
+I will go with episodic version,one reason which made me choose that:
+a) I will not have to calculate reward after every action which agent will make, I can just make terminal reward based on portfolio value after episode - inital value of portfolio - transaction cost occur inside the episode. The reason for doing it that I believe it will motivate agent to learn trading rather than to think long term. This also means that I have to check the hypothesis on different episode of different length. 
+I also have to test thypothesis that what will if i give immediate reward after every time interval and also terminal reward based on what I discussed above. All in all the project looks like a lot of hit and trial. I should better write good code and store all results properly so that I can compare them to see what works and what don't. Ofcourse the idea is to make sure agent remain profitable while trading. 
+
+#Policy network:
+I will be starting with simple feed-forward network. Though, I am also inclined to use convolutional network reason being they do very well when the minor change in input should not make a change in ouput. for example: in image recognizition, a small pixel values here and there doesn't make image change. Intutively stocks numbers to me somtime look same a small change should not trigger a trade but again the problem here comes with normalization. With normalization the big change in number will be reduced to a very small in inputs hence its good to start with feed-forward.
+
 
 More info here:
 https://docs.google.com/document/d/12TmodyT4vZBViEbWXkUIgRW_qmL1rTW00GxSMqYGNHU/edit
@@ -34,23 +44,21 @@ PERIOD: is the historical data period (see also Google Finance), here 10d refers
 
 
 #Dependencies:
-For this new project, I will use chainer. I have read a lot of good things about it on google forums. So shifting from theano to chainer. Also theano makes my life hard all the time :).
-1) https://github.com/pfnet/chainer
-2) https://github.com/blampe/IbPy
+1) https://github.com/tensorflow/tensorflow
+2) https://github.com/pfnet/chainer (if wants to use chainer)
+3) https://github.com/blampe/IbPy
 
-#for ubuntu
-http://docs.chainer.org/en/stable/install.html
-
-
-#External help
-1) Deep-Q-chainer
+External help
+1)
+2) Deep-Q-chainer
 https://github.com/ugo-nama-kun/DQN-chainer
 
-##some questions
-1) We should use data from both exchange to predict movement (read lot of algo trader to that).
-2) We can update algo to predict quantity also as ultimate effort for an algo should be to make actual gain at the end of particular time period positive.
 
-
-###for reading
+#for reading on getting data using IB
 https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
+
+#Reinforcement learning resources
+https://github.com/aikorea/awesome-rl
+
+
 
