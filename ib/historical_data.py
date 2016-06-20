@@ -12,6 +12,7 @@ def error_handler(msg):
 new_symbolinput = ['CANFINHOM', 'KSCL', 'AJP', 'GRUH', 'GREENPLY', 'GRANULES', 'SBIN', 'SHILPAMED', 'SHEMAROO', 'TCS', 'TITAN', 'TORNTPHAR', 'TORNTPOWE', 'SHARONBIO', 'MANAPPURA', 'MAYURUNIQ', 'MPSLTD', 'MUTHOOTFI', 'ATULAUTO', 'AVANTIFEE']
 #for symbol
 new_symbolinput = ['GRUH', 'GREENPLY', 'GRANULES', 'SBIN', 'SHILPAMED', 'SHEMAROO', 'TCS', 'TITAN', 'TORNTPHAR', 'TORNTPOWE', 'SHARONBIO', 'MANAPPURA', 'MAYURUNIQ', 'MPSLTD', 'MUTHOOTFI', 'ATULAUTO', 'AVANTIFEE']
+new_symbolinput = ['NIFTY50']
 newDataList = []
 dataDownload = []
 
@@ -57,18 +58,18 @@ for i in new_symbolinput:
 	print i
 	c = Contract()
 	c.m_symbol = i
-	c.m_secType = "STK"
+	c.m_secType = "IND"
 	c.m_exchange = "NSE"
 	c.m_currency = "INR"
-	number_of_days = 2500
+	number_of_days = 1
 	for day in range(0,number_of_days,10):
-		time = datetime.now() - relativedelta(days=(2500 - day))
+		time = datetime.now() - relativedelta(days=(2400 - day))
 		endtime = time.strftime('%Y%m%d %H:%M:%S')
 		#for reference http://www.inside-r.org/packages/cran/IBrokers/docs/reqHistoricalData
 		#for data limitation https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
 		tws.reqHistoricalData(symbol_id,contract=c,endDateTime=endtime,
-            durationStr='10 D',
-            barSizeSetting='20 mins',
+            durationStr='1 D',
+            barSizeSetting='1 min',
             whatToShow='TRADES',
             useRTH=1,
             formatDate=2)

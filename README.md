@@ -65,6 +65,8 @@ https://github.com/ugo-nama-kun/DQN-chainer
 
 #for reading on getting data using IB
 https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
+https://www.interactivebrokers.com/en/software/api/apiguide/java/historicaldata.htm
+symbol: stock -> STK, Indices -> IND
 
 #Reinforcement learning resources
 https://github.com/aikorea/awesome-rl , this is enough if you are serious
