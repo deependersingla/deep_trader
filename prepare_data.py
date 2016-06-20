@@ -2,6 +2,7 @@ from numpy import genfromtxt
 from sklearn.cross_validation import train_test_split
 from sklearn import preprocessing
 import numpy as np
+import dateutil.parse
 #ticket data wrting to some csv or temp array
 
 def prepare_data(scrip_id):
