@@ -61,14 +61,14 @@ for i in new_symbolinput:
 	c.m_secType = "IND"
 	c.m_exchange = "NSE"
 	c.m_currency = "INR"
-	number_of_days = 1
-	for day in range(0,number_of_days,10):
-		time = datetime.now() - relativedelta(days=(2400 - day))
+	number_of_days = 2600
+	for day in range(0,number_of_days,2):
+		time = datetime.now() - relativedelta(days=(2600 - day))
 		endtime = time.strftime('%Y%m%d %H:%M:%S')
 		#for reference http://www.inside-r.org/packages/cran/IBrokers/docs/reqHistoricalData
 		#for data limitation https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
 		tws.reqHistoricalData(symbol_id,contract=c,endDateTime=endtime,
-            durationStr='1 D',
+            durationStr='2 D',
             barSizeSetting='1 min',
             whatToShow='TRADES',
             useRTH=1,

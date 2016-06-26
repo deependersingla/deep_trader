@@ -30,15 +30,17 @@ def prepare_data():
 	temp_episode = []
 	index = 0
 	for data in stock_data:
-		temp = [data[2], data[3], data[4], data[5], data[6]]
+		#removing volume traded for now as I don't have it
+		temp = [data[2], data[3], data[4], data[5]]
 		average_dataset.append(temp)
 		print(index)
+		print(len(average_dataset))
 		if index > moving_average_number:
 			mean = find_average(average_dataset)
 			mean_array = average_dataset/mean
 			last_one_hour_average = find_average(mean_array[-60:])
 			last_one_day_average = find_average(mean_array[-300:])
-			last_one_week_average = mean_array
+			last_one_week_average = mean
 			last_minute_data = average_dataset[-1]
 			average_dataset = average_dataset[1:]
 			vector = []
@@ -46,13 +48,15 @@ def prepare_data():
 			vector.extend(last_one_hour_average)
 			vector.extend(last_one_day_average)
 			vector.extend(last_one_week_average)
-			temp_episode.append(vector)
-			if index % 10 == 0:
-				total_data.append(temp_episode)
-				temp_episode = []
+			total_data.append(vector)
+			#temp_episode.append(vector)
+			#if index % 10 == 0:
+			#	total_data.append(temp_episode)
+			#	temp_episode = []
 		index += 1
-	pdb.set_trace();
-	print(5)
+	with open("data_wo_vol.pkl", "wb") as myFile:
+		six.moves.cPickle.dump(total_data, myFile, -1)
+	print("Done")
 
 def find_average(data):
     return np.mean(data, axis=0)
