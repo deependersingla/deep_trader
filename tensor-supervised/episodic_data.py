@@ -30,8 +30,7 @@ def prepare_data():
 	temp_episode = []
 	index = 0
 	for data in stock_data:
-		#removing volume traded for now as I don't have it
-		temp = [data[2], data[3], data[4], data[5]]
+		temp = [data[2], data[3], data[4], data[5],data[8]]
 		average_dataset.append(temp)
 		print(index)
 		print(len(average_dataset))
@@ -60,17 +59,5 @@ def prepare_data():
 
 def find_average(data):
     return np.mean(data, axis=0)
-
-def make_standard_data(last_n_data, daily_gain):
-    column = len(last_n_data[0])
-    standaridized_data = standardization(last_n_data)
-    #apply minmax above it to change range from 0 to 1, can be changed
-    min_max_scaler = preprocessing.MinMaxScaler()
-    standaridized_data = min_max_scaler.fit_transform(standaridized_data)
-    vector = standaridized_data[-10:].reshape(10*column,)
-    vector = np.append(vector,find_average(standaridized_data[-200:]))
-    vector = np.append(vector, find_average(standaridized_data[-1000:]))
-    vector = np.append(vector, daily_gain)
-    return vector
 
 prepare_data()
