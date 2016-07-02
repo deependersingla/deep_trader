@@ -11,7 +11,8 @@ import tensorflow as tf
 import numpy as np 
 import random
 from collections import deque
-import pdb
+import pdb 
+from train_stock import *
 
 # Hyper Parameters for DQN
 GAMMA = 0.9 # discount factor for target Q 
@@ -23,16 +24,17 @@ BATCH_SIZE = 32 # size of minibatch
 
 class DQN():
 	# DQN Agent
-	def __init__(self, env):
+	def __init__(self, data_dictionary):
+		#pdb.set_trace();
 		# init experience replay
 		self.replay_buffer = deque()
 		# init some parameters
 		self.time_step = 0
 		self.epsilon = INITIAL_EPSILON
-		self.state_dim = env.observation_space.shape[0]
-		self.action_dim = env.action_space.n 
+		self.state_dim = data_dictionary["input"]
+		self.action_dim = data_dictionary["action"]
 
-		self.create_Q_network()
+		self.create_Q_network(data_dictionary)
 		self.create_training_method()
 
 		# Init session
@@ -49,13 +51,13 @@ class DQN():
 				print "Could not find old network weights"
 
 		global summary_writer
-		summary_writer = tf.train.SummaryWriter('car_logs',graph=self.session.graph)
+		summary_writer = tf.train.SummaryWriter('logs',graph=self.session.graph)
 
-	def create_Q_network(self):
+	def create_Q_network(self, data_dictionary):
 		# network weights
-		W1 = self.weight_variable([self.state_dim,20])
-		b1 = self.bias_variable([20])
-		W2 = self.weight_variable([20,self.action_dim])
+		W1 = self.weight_variable([self.state_dim,data_dictionary["hidden_layer_1_size"]])
+		b1 = self.bias_variable([data_dictionary["hidden_layer_1_size"]])
+		W2 = self.weight_variable([data_dictionary["hidden_layer_1_size"],self.action_dim])
 		b2 = self.bias_variable([self.action_dim])
 		# input layer
 		self.state_input = tf.placeholder("float",[None,self.state_dim])
@@ -149,47 +151,61 @@ class DQN():
 # ---------------------------------------------------------
 # Hyper Parameters
 EPISODE = 10000 # Episode limitation
-STEP = 20 # Step limitation in an episode
+STEP = 10 #Steps in an episode
 TEST = 10 # The number of experiment test every 100 episode
 
 def main():
 	# initialize OpenAI Gym env and dqn agent
-	env = gym.make(ENV_NAME)
-	agent = DQN(env)
+	#env = gym.make(ENV_NAME)
+	data_dictionary = get_intial_data()
+	agent = DQN(data_dictionary)
+	data = data_dictionary["x_train"]
 
-	for episode in xrange(EPISODE):
+	for episode in xrange(len(data)):
 		# initialize task
+		episode_data = data[episode]
 		print(episode)
-		#pdb.set_trace();
-		state = env.reset()
+		portfolio = 0
+		portfolio_value = 100
 		# Train 
 		total_reward = 0
 		for step in xrange(STEP):
+			state = episode_data[step] + [portfolio]
 			action = agent.egreedy_action(state) # e-greedy action for train
-			next_state,reward,done,_ = env.step(action)
+			print(step)
+			if step < STEP - 2:
+				new_state = episode_data[step+1] 
+			else:
+				new_state = []
+			if step == STEP - 1:
+				done = True
+			else:
+				done = False
+			#pdb.set_trace();
+			next_state,reward,done,portfolio = new_stage_data(action, portfolio, state, new_state, portfolio_value, done)
 			# Define reward for agent
 			#print "next_state",next_state
 			total_reward += reward
-			if done:
-				reward = 210 + total_reward
-			else:
-				reward = abs(next_state[0] - state[0])
+			#if done:
+			#	reward = 210 + total_reward
+			#else:
+			#	reward = abs(next_state[0] - state[0])
 			agent.perceive(state,action,reward,next_state,done)
 			state = next_state
 			if done:
 				break
 		# Test every 100 episodes
-		if episode % 100 == 0 and episode > 10:
-			total_reward = 0
-			for i in xrange(10):
-				state = env.reset()
-				for j in xrange(STEP):
-					env.render()
-					action = agent.action(state) # direct action for test
-					state,reward,done,_ = env.step(action)
-					total_reward += reward
-					if done:
-						break
+		#if episode % 100 == 0 and episode > 10:
+			#total_reward = 0
+			#for i in xrange(10):
+				#state = env.reset()
+				f#or j in xrange(STEP):
+					#env.render()
+					#action = agent.action(state) # direct action for test
+					#next_state,reward,done,portfolio = new_stage_data(action, portfolio, state, new_state, portfolio_value, done)
+					#total_reward += reward
+					#if done:
+						#break
 			ave_reward = total_reward/10
 			print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
 			if ave_reward > -110:
@@ -197,16 +213,16 @@ def main():
 
 	# upload result
 	#env.monitor.start('gym_results/MountainCar-v0-experiment-1',force = True)
-	for i in xrange(100):
-		state = env.reset()
-		for j in xrange(200):
-			env.render()
-			action = agent.action(state) # direct action for test
-			state,reward,done,_ = env.step(action)
-			total_reward += reward
-			if done:
-				break
-	env.monitor.close()
+	#for i in xrange(100):
+		#state = env.reset()
+		#for j in xrange(200):
+			#env.render()
+			#action = agent.action(state) # direct action for test
+			#state,reward,done,_ = env.step(action)
+			#total_reward += reward
+			#if done:
+				#break
+	#env.monitor.close()
 
 if __name__ == '__main__':
 	main()

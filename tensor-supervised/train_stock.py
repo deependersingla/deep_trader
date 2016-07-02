@@ -20,3 +20,31 @@ from six.moves.urllib import request
 
 data = episodic_data.load_data("data.pkl",episode=10)
 x_train, x_test = train_test_split(data, test_size=0.10, random_state=123)
+
+def get_intial_data():
+    data_dictionary = {}
+    data_dictionary["input"] = len(x_train[0][0]) + 1 #here one is portfolio value
+    data_dictionary["action"] = 3 #short, buy and hold
+    data_dictionary["hidden_layer_1_size"] = 40
+    data_dictionary["hidden_layer_2_size"] = 20 #will be using later
+    data_dictionary["x_train"] = x_train
+    return data_dictionary
+
+def new_stage_data(action,portfolio,old_state,new_state,portfolio_value,done):
+    old_portfolio_value = portfolio_value
+    old_price = old_state[1]
+    low_price = old_state[2]
+    if action == 1:
+        portfolio_value -= old_price
+        portfolio += 1
+    elif action == -1:
+        portfolio_value += old_price
+        portfolio -= 1
+    elif action == 0:
+        portfolio = portfolio
+    reward = 0
+    if new_state:
+        new_state = new_state + [portfolio]
+    if done:
+        reward = (portfolio_value + portfolio * low_price) - 100
+    return new_state, reward, done, portfolio
