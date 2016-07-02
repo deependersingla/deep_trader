@@ -41,7 +41,7 @@ class DQN():
 
 		# loading networks
 		self.saver = tf.train.Saver()
-		checkpoint = tf.train.get_checkpoint_state("car_saved_networks")
+		checkpoint = tf.train.get_checkpoint_state("saved_networks")
 		if checkpoint and checkpoint.model_checkpoint_path:
 				self.saver.restore(self.session, checkpoint.model_checkpoint_path)
 				print "Successfully loaded:", checkpoint.model_checkpoint_path
@@ -119,7 +119,7 @@ class DQN():
 
 		# save network every 1000 iteration
 		if self.time_step % 1000 == 0:
-			self.saver.save(self.session, 'car_saved_networks/' + 'network' + '-dqn', global_step = self.time_step)
+			self.saver.save(self.session, 'saved_networks/' + 'network' + '-dqn', global_step = self.time_step)
 
 	def egreedy_action(self,state):
 		Q_value = self.Q_value.eval(feed_dict = {
@@ -148,9 +148,8 @@ class DQN():
 
 # ---------------------------------------------------------
 # Hyper Parameters
-ENV_NAME = 'MountainCar-v0'
 EPISODE = 10000 # Episode limitation
-STEP = 200 # Step limitation in an episode
+STEP = 20 # Step limitation in an episode
 TEST = 10 # The number of experiment test every 100 episode
 
 def main():

@@ -60,4 +60,9 @@ def prepare_data():
 def find_average(data):
     return np.mean(data, axis=0)
 
-prepare_data()
+def load_data(file,episode):
+	with open(file, 'rb') as myFile:
+		data = six.moves.cPickle.load(myFile)
+		return map(list,zip(*[iter(data)]*episode))
+
+#prepare_data()
