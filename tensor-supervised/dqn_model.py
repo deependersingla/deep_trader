@@ -18,8 +18,8 @@ from train_stock import *
 GAMMA = 0.9 # discount factor for target Q 
 INITIAL_EPSILON = 1 # starting value of epsilon
 FINAL_EPSILON = 0.1 # final value of epsilon
-REPLAY_SIZE = 10000 # experience replay buffer size
-BATCH_SIZE = 32 # size of minibatch
+REPLAY_SIZE = 20000 # experience replay buffer size
+BATCH_SIZE = 64 # size of minibatch
 #TARGET_UPDATE_RATE = 0.01 
 
 class DQN():
@@ -82,6 +82,7 @@ class DQN():
 		one_hot_action = np.zeros(self.action_dim)
 		one_hot_action[action] = 1
 		self.replay_buffer.append((state,one_hot_action,reward,next_state,done))
+		#pdb.set_trace();
 		if len(self.replay_buffer) > REPLAY_SIZE:
 			self.replay_buffer.popleft()
 
@@ -99,6 +100,7 @@ class DQN():
 
 		# Step 2: calculate y
 		y_batch = []
+		#pdb.set_trace();
 		Q_value_batch = self.Q_value.eval(feed_dict={self.state_input:next_state_batch})
 		for i in range(0,BATCH_SIZE):
 			done = minibatch[i][4]
@@ -151,7 +153,7 @@ class DQN():
 # ---------------------------------------------------------
 # Hyper Parameters
 EPISODE = 10000 # Episode limitation
-STEP = 10 #Steps in an episode
+STEP = 9 #Steps in an episode
 TEST = 10 # The number of experiment test every 100 episode
 
 def main():
@@ -170,49 +172,29 @@ def main():
 		# Train 
 		total_reward = 0
 		for step in xrange(STEP):
-			state = episode_data[step] + [portfolio]
-			action = agent.egreedy_action(state) # e-greedy action for train
+			state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
+			print("step is: ")
 			print(step)
-			if step < STEP - 2:
-				new_state = episode_data[step+1] 
-			else:
-				new_state = []
-			if step == STEP - 1:
-				done = True
-			else:
-				done = False
-			#pdb.set_trace();
-			next_state,reward,done,portfolio = new_stage_data(action, portfolio, state, new_state, portfolio_value, done)
-			# Define reward for agent
-			#print "next_state",next_state
 			total_reward += reward
-			#if done:
-			#	reward = 210 + total_reward
-			#else:
-			#	reward = abs(next_state[0] - state[0])
+			if len(next_state) == 0:
+				pdb.set_trace();
 			agent.perceive(state,action,reward,next_state,done)
-			state = next_state
 			if done:
 				break
 		# Test every 100 episodes
-		#if episode % 100 == 0 and episode > 10:
-			#total_reward = 0
-			#for i in xrange(10):
-				#state = env.reset()
-				f#or j in xrange(STEP):
-					#env.render()
-					#action = agent.action(state) # direct action for test
-					#next_state,reward,done,portfolio = new_stage_data(action, portfolio, state, new_state, portfolio_value, done)
-					#total_reward += reward
-					#if done:
-						#break
+		if episode % 100 == 0 and episode > 10:
+			total_reward = 0
+			for i in xrange(10):
+				for step in xrange(STEP):
+					state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
+					total_reward += reward
+					if done:
+						break
 			ave_reward = total_reward/10
 			print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
-			if ave_reward > -110:
-				break
+			#if ave_reward > -110:
+				#break
 
-	# upload result
-	#env.monitor.start('gym_results/MountainCar-v0-experiment-1',force = True)
 	#for i in xrange(100):
 		#state = env.reset()
 		#for j in xrange(200):
@@ -223,6 +205,22 @@ def main():
 			#if done:
 				#break
 	#env.monitor.close()
+
+def env_stage_data(agent, step, episode_data, portfolio, portfolio_value):
+	state = episode_data[step] + [portfolio]
+	action = agent.egreedy_action(state) # e-greedy action for train
+	#print(step)
+	if step < STEP - 2:
+		new_state = episode_data[step+1] 
+	else:
+		new_state = episode_data[step+1]
+	if step == STEP - 1:
+		done = True
+	else:
+		done = False
+	next_state,reward,done,portfolio,portfolio_value = new_stage_data(action, portfolio, state, new_state, portfolio_value, done)
+	return state, action, next_state, reward, done, portfolio, portfolio_value
+			
 
 if __name__ == '__main__':
 	main()

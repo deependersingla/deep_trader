@@ -18,7 +18,7 @@ import six
 import episodic_data
 from six.moves.urllib import request
 
-data = episodic_data.load_data("data.pkl",episode=10)
+data = episodic_data.load_data("data_1.pkl",episode=10)
 x_train, x_test = train_test_split(data, test_size=0.10, random_state=123)
 
 def get_intial_data():
@@ -28,6 +28,7 @@ def get_intial_data():
     data_dictionary["hidden_layer_1_size"] = 40
     data_dictionary["hidden_layer_2_size"] = 20 #will be using later
     data_dictionary["x_train"] = x_train
+    data_dictionary["x_test"] = x_test
     return data_dictionary
 
 def new_stage_data(action,portfolio,old_state,new_state,portfolio_value,done):
@@ -37,7 +38,7 @@ def new_stage_data(action,portfolio,old_state,new_state,portfolio_value,done):
     if action == 1:
         portfolio_value -= old_price
         portfolio += 1
-    elif action == -1:
+    elif action == 2:
         portfolio_value += old_price
         portfolio -= 1
     elif action == 0:
@@ -47,4 +48,4 @@ def new_stage_data(action,portfolio,old_state,new_state,portfolio_value,done):
         new_state = new_state + [portfolio]
     if done:
         reward = (portfolio_value + portfolio * low_price) - 100
-    return new_state, reward, done, portfolio
+    return new_state, reward, done, portfolio, portfolio_value
