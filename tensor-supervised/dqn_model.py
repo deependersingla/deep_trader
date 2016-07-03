@@ -155,6 +155,7 @@ class DQN():
 EPISODE = 10000 # Episode limitation
 STEP = 9 #Steps in an episode
 TEST = 10 # The number of experiment test every 100 episode
+ITERATION = 10
 
 def main():
 	# initialize OpenAI Gym env and dqn agent
@@ -163,48 +164,46 @@ def main():
 	agent = DQN(data_dictionary)
 	data = data_dictionary["x_train"]
 
-	for episode in xrange(len(data)):
-		# initialize task
-		episode_data = data[episode]
-		print(episode)
-		portfolio = 0
-		portfolio_value = 100
-		# Train 
-		total_reward = 0
-		for step in xrange(STEP):
-			state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
-			print("step is: ")
-			print(step)
-			total_reward += reward
-			if len(next_state) == 0:
-				pdb.set_trace();
-			agent.perceive(state,action,reward,next_state,done)
-			if done:
-				break
-		# Test every 100 episodes
-		if episode % 100 == 0 and episode > 10:
+	for iter in xrange(ITERATION):
+		print(iter)
+		for episode in xrange(len(data)):
+			# initialize task
+			episode_data = data[episode]
+			portfolio = 0
+			portfolio_value = 100
+			# Train 
 			total_reward = 0
-			for i in xrange(10):
-				for step in xrange(STEP):
-					state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
-					total_reward += reward
-					if done:
-						break
-			ave_reward = total_reward/10
-			print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
-			#if ave_reward > -110:
-				#break
+			for step in xrange(STEP):
+				state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
+				total_reward += reward
+				agent.perceive(state,action,reward,next_state,done)
+				if done:
+					break
+			# Test every 100 episodes
+			if episode % 100 == 0 and episode > 10:
+				total_reward = 0
+				for i in xrange(10):
+					for step in xrange(STEP):
+						state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
+						total_reward += reward
+						if done:
+							break
+				ave_reward = total_reward/10
+				print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
 
-	#for i in xrange(100):
-		#state = env.reset()
-		#for j in xrange(200):
-			#env.render()
-			#action = agent.action(state) # direct action for test
-			#state,reward,done,_ = env.step(action)
-			#total_reward += reward
-			#if done:
-				#break
-	#env.monitor.close()
+		#on test data
+		data = data_dictionary["x_test"]
+		for episode in xrange(len(data)):
+			episode_data = data[episode]
+			portfolio = 0
+			portfolio_value = 100
+			total_reward = 0
+			for step in xrange(STEP):
+				state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
+				total_reward += reward
+				if done:
+					break
+			print 'episode: ',episode,'Testing Average Reward:',total_reward
 
 def env_stage_data(agent, step, episode_data, portfolio, portfolio_value):
 	state = episode_data[step] + [portfolio]
