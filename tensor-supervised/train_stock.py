@@ -33,12 +33,15 @@ def get_intial_data():
 
 def new_stage_data(action,portfolio,old_state,new_state,portfolio_value,done):
     old_portfolio_value = portfolio_value
-    old_price = old_state[1]
-    low_price = old_state[2]
+    low_price = new_state[2]
+    #buying
     if action == 1:
+        old_price = old_state[1]
         portfolio_value -= old_price
         portfolio += 1
+    #selling
     elif action == 2:
+        old_price = old_state[2]
         portfolio_value += old_price
         portfolio -= 1
     elif action == 0:
@@ -46,6 +49,12 @@ def new_stage_data(action,portfolio,old_state,new_state,portfolio_value,done):
     reward = 0
     if new_state:
         new_state = new_state + [portfolio]
+    if portfolio >= 0:
+        low_price = new_state[2]
+    else:
+        low_price = new_state[1]
     if done:
         reward = (portfolio_value + portfolio * low_price) - 100
+    if reward > 0:
+        reward = 10*reward #increasing reward
     return new_state, reward, done, portfolio, portfolio_value

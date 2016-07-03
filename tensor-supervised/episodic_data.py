@@ -20,7 +20,7 @@ from six.moves.urllib import request
 episode = 10 #lenght of one episode
 data_array = []
 parent_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
-raw_data_file  = os.path.join(parent_dir,'ib/20_ftr_csv/NIFTY50.csv') 
+raw_data_file  = os.path.join(parent_dir,'tensor-supervised/NIFTY.csv') 
 moving_average_number = 1000 #number of time interval for calculating moving average
 #pdb.set_trace()
 
@@ -54,7 +54,7 @@ def prepare_data():
 			#	total_data.append(temp_episode)
 			#	temp_episode = []
 		index += 1
-	with open("data.pkl", "wb") as myFile:
+	with open("data_1.pkl", "wb") as myFile:
 		six.moves.cPickle.dump(total_data, myFile, -1)
 	print("Done")
 
