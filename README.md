@@ -30,10 +30,13 @@ https://docs.google.com/document/d/12TmodyT4vZBViEbWXkUIgRW_qmL1rTW00GxSMqYGNHU/
 
 
 Data sources:
-1) Nifty Data: https://drive.google.com/folderview?id=0B8e3dtbFwQWUZ1I5dklCMmE5M2M&ddrp=1%20%E2%81%A0%E2%81%A0%E2%81%A0%E2%81%A09:05%20PM%E2%81%A0%E2%81%A0%E2%81%A0%E2%81%A0%E2%81%A0
+1) For directly running this repo, use this data source and you are all setup: https://drive.google.com/open?id=0B6ZrYxEMNGR-MEd5Ti0tTEJjMTQ
+
+2) Nifty Data: https://drive.google.com/folderview?id=0B8e3dtbFwQWUZ1I5dklCMmE5M2M&ddrp=1%20%E2%81%A0%E2%81%A0%E2%81%A0%E2%81%A09:05%20PM%E2%81%A0%E2%81%A0%E2%81%A0%E2%81%A0%E2%81%A0
 
 
-2) Nifty futures:http://www.4shared.com/folder/Fv9Jm0bS/NSE_Futures
+
+3) Nifty futures:http://www.4shared.com/folder/Fv9Jm0bS/NSE_Futures
 
 
 3) Google finance: The package connects with Google Finance and downloads a spreadsheet from:http://www.google.com/finance/getprices?q=.DJI&x=INDEXDJX&i=60&p=10d&f=d,c,h,l,o,v with the date (intra-daily), closing price, high, low, open and volume.
