@@ -3,9 +3,9 @@ This project uses Reinforcement learning on stock market and agent tries to lear
 
 
 #Steps to Reproduce DQN:
-a) Copy data from here https://drive.google.com/file/d/0B6ZrYxEMNGR-MEd5Ti0tTEJjMTQ/view into tensor-supervised directory.
-b) Create a directory saved_networks inside tensor_supervised for saving networks.
-c) Run python dqn_model.py for DQN.
+a) Copy data from here https://drive.google.com/file/d/0B6ZrYxEMNGR-MEd5Ti0tTEJjMTQ/view into tensor-supervised directory.<br>
+b) Create a directory saved_networks inside tensor_supervised for saving networks.<br>
+c) Run python dqn_model.py for DQN.<br>
 
 Currently, I am working on implementing PG.
 
