@@ -10,7 +10,7 @@ c) Run python dqn_model.py for DQN.<br>
 Currently, I am working on implementing PG.
 
 Process:
-a) Intially I started by using chainer for the project for both supervised and reinforcement learning. In middle of it AlphaGo (https://research.googleblog.com/2016/01/alphago-mastering-ancient-game-of-go.html) came, so I shifted to read Sutton book (https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html), AlphaGo paper and related paper, David Silver lectures (http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html, they are great)
+Intially I started by using chainer for the project for both supervised and reinforcement learning. In middle of it AlphaGo (https://research.googleblog.com/2016/01/alphago-mastering-ancient-game-of-go.html) came, so I shifted to read Sutton book (https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html), AlphaGo paper and related paper, David Silver lectures (http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html, they are great)
 on Reinforcement learning. I am coming back to project after 45 days a lot has changed in TensorFlow all the cool kids (even Deepmind) have started using it. Hence, I am ditching chainer and will use tensorflow from now. Exciting times ahead.
 
 
