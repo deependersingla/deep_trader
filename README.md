@@ -24,14 +24,13 @@ I will be starting with simple feed-forward network. Though, I am also inclined 
 I want to start with 2 layer first, yes that just vanilla but lets see how it works than will shift to more deeper network. On output side I will be using a sigmoid non-linear function to get value out of 0 and 1. In hidden layer all neurons will be RELU. With 2 layers, I am assuming that first layer w1 can decide whether market is bullish, bearish and stable. 2nd layer can then decide what action to take based on based layer.
 
 #training:
-I will run x episode of training and each will have y time interval on it. Policy network will have to make x*y times decision of whether to hold, buy or short. After this based on our reward I will label every decison whether it was good/bad and update network. I will again run x episode on the improved network and will keep doing it. Like MCTS where things average out to optimality our policy also will start making more positive decision and less negative decision even though in training we will see policy wrong choices but on average it will work out because we will do same thing million times.
+I will run x episode of training and each will have y time interval on it. Policy network will have to make x*y times decision of whether to hold, buy or short. After this based on our reward I will label every decison whether it was good/bad and update network. I will again run x episode on the improved network and will keep doing it. Like MCTS where things average out to optimality our policy also will start making more positive decision and less negative decision even though in training we will see policy making some wrong choices but on average it will work out because we will do same thing million times.
 
 #Episodic 
-I plan to start with episodic training rather than continous training. The major reason for this is that I will not have to calculate reward after every action which agent will make which is complex to do in trading, I can just make terminal reward based on portfolio value after an entire episode (inital value of portfolio - transaction cost occur inside the episode). The reason for doing it that I believe it will motivate agent to learn trading on episodic basic. It also means that I have to check the hypothesis on different episode of different length, also on what will happen if i give immediate reward after every time interval and also terminal reward based on what I discussed above. As usual like every AI projects, there will be a lot of hit and trial. 
-
-I should better write good code and store all results properly so that I can compare them to see what works and what don't. Ofcourse the idea is to make sure agent remain profitable while trading. 
-
-
+I plan to start with episodic training rather than continous training. The major reason for this is that I will not have to calculate reward after every action which agent will make which is complex to do in trading, I can just make terminal reward based on portfolio value after an entire episode (final value of portfolio - transaction cost occur inside the episode - initial value of portfolio). The reason for doing it that I believe it will motivate agent to learn trading on episodic basic. It also means that I have to check the hypothesis on: <br> 
+a) Different episode of different length<br>
+b) On different rewards terminal reward or rewards after each step. <br>
+As usual like every AI projects, there will be a lot of hit and trial. I should better write good code and store all results properly so that I can compare them to see what works and what don't. Ofcourse the idea is to make sure agent remain profitable while trading. 
 
 
 More info here:
