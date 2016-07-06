@@ -1,9 +1,5 @@
 # -------------------------------
-# DQN for CartPole in OpenAI Gym
-# Author: Flood Sung
-# Date: 2016.6.27
-# All rights reserved
-# Took it from https://gist.github.com/songrotek/3b9d893f1e0788f8fad0e6b49cde70f1#file-dqn-py
+# Took Boilerplate code from here https://gist.github.com/songrotek/3b9d893f1e0788f8fad0e6b49cde70f1#file-dqn-py
 # -------------------------------
 
 import gym
@@ -20,7 +16,6 @@ INITIAL_EPSILON = 1 # starting value of epsilon
 FINAL_EPSILON = 0.1 # final value of epsilon
 REPLAY_SIZE = 20000 # experience replay buffer size
 BATCH_SIZE = 64 # size of minibatch
-#TARGET_UPDATE_RATE = 0.01 
 
 class DQN():
 	# DQN Agent
@@ -82,7 +77,6 @@ class DQN():
 		one_hot_action = np.zeros(self.action_dim)
 		one_hot_action[action] = 1
 		self.replay_buffer.append((state,one_hot_action,reward,next_state,done))
-		#pdb.set_trace();
 		if len(self.replay_buffer) > REPLAY_SIZE:
 			self.replay_buffer.popleft()
 
