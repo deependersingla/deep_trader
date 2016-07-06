@@ -12,8 +12,9 @@ Currently, I am working on implementing PG.
 Before this, I used RL here: http://somedeepthoughtsblog.tumblr.com/post/134793589864/maths-versus-computation
 
 Process:
-Intially I started by using chainer for the project for both supervised and reinforcement learning. In middle of it AlphaGo (https://research.googleblog.com/2016/01/alphago-mastering-ancient-game-of-go.html) came, so I shifted to read Sutton book (https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html), AlphaGo paper and related paper, David Silver lectures (http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html, they are great)
-on Reinforcement learning. I am coming back to project after 45 days a lot has changed in TensorFlow all the cool kids (even Deepmind) have started using it. Hence, I am ditching chainer and will use tensorflow from now. Exciting times ahead.
+Intially I started by using Chainer for the project for both supervised and reinforcement learning.  In middle of it AlphaGo (https://research.googleblog.com/2016/01/alphago-mastering-ancient-game-of-go.html) came because of it I shifted to read Sutton book on RL (https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html), AlphaGo and related papers, David Silver lectures (http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html, they are great). 
+
+I am coming back to project after some time a lot has changed. All the cool kids even DeepMind (the gods) have started using TensorFlow. Hence, I am ditching Chainer and will use Tensorflow from now. Exciting times ahead.
 
 
 #For the first iteration of the project
