@@ -87,9 +87,10 @@ class PG():
         self.replay_buffer += temp
 
     def train_pg_network(self):
-        minibatch = random.sample(self.replay_buffer,BATCH_SIZE)
-        state_batch = [data[0] for data in minibatch]
-        y_batch = [data[1] for data in minibatch]
+        #minibatch = random.sample(self.replay_buffer,BATCH_SIZE*5)
+        state_batch = [data[0] for data in self.replay_buffer]
+        y_batch = [data[1] for data in self.replay_buffer]
+        pdb.set_trace();
         self.optimizer.run(feed_dict={self.y_input:y_batch,self.state_input:state_batch})
         summary_str = self.session.run(merged_summary_op,feed_dict={
             self.y_input:y_batch,
@@ -162,7 +163,7 @@ def main():
             discounted_epr /= np.std(discounted_epr)
             epdlogp = np.vstack(grad_list)
             epdlogp *= discounted_epr
-            agent.perceive(state_list,grad_list)
+            agent.perceive(state_list, epdlogp)
             state = env.reset()
             state_list, reward_list, grad_list = [],[],[]
             if episode_number % BATCH_SIZE == 0:
@@ -182,6 +183,7 @@ def main():
                             break
                 ave_reward = total_reward/TEST
                 print 'episode: ',episode_number,'Evaluation Average Reward:',ave_reward
+                state = env.reset()
 
 if __name__ == '__main__':
     main()
