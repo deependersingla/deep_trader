@@ -1,3 +1,7 @@
+#-----------------------------
+#Took Boilerplate code from here: https://gist.github.com/karpathy/a4166c7fe253700972fcbc77e4ea32c5
+#-----------------------------
+
 import gym
 import tensorflow as tf 
 import numpy as np 
@@ -10,22 +14,20 @@ from train_stock import *
 GAMMA = 0.9 # discount factor for target Q 
 INITIAL_EPSILON = 1 # starting value of epsilon
 FINAL_EPSILON = 0.1 # final value of epsilon
-BATCH_SIZE = 64 # size of minibatch
+BATCH_SIZE = 32 # size of minibatch
 LEARNING_RATE = 1e-4
 
 class PG():
     # DQN Agent
-    def __init__(self, data_dictionary):
-        #pdb.set_trace();
-        # init experience replay
-        self.replay_buffer = deque()
+    def __init__(self):
         # init some parameters
+        self.replay_buffer = deque()
         self.time_step = 0
         self.epsilon = INITIAL_EPSILON
-        self.state_dim = data_dictionary["input"]
-        self.action_dim = data_dictionary["action"]
+        self.state_dim = env.observation_space.shape[0]
+        self.action_dim = env.action_space.n 
 
-        self.create_pg_network(data_dictionary)
+        self.create_pg_network()
         self.create_training_method()
 
         # Init session
@@ -44,11 +46,11 @@ class PG():
         global summary_writer
         summary_writer = tf.train.SummaryWriter('logs',graph=self.session.graph)
 
-    def create_pg_network(self, data_dictionary):
+    def create_pg_network(self):
         # network weights
-        W1 = self.weight_variable([self.state_dim,data_dictionary["hidden_layer_1_size"]])
-        b1 = self.bias_variable([data_dictionary["hidden_layer_1_size"]])
-        W2 = self.weight_variable([data_dictionary["hidden_layer_1_size"],self.action_dim])
+        W1 = self.weight_variable([self.state_dim,20])
+        b1 = self.bias_variable([20])
+        W2 = self.weight_variable([20,self.action_dim])
         b2 = self.bias_variable([self.action_dim])
         # input layer
         self.state_input = tf.placeholder("float",[None,self.state_dim])
@@ -61,26 +63,17 @@ class PG():
     def create_training_method(self):
         self.action_input = tf.placeholder("float",[None,self.action_dim]) # one hot presentation
         self.y_input = tf.placeholder("float",[None])
-        Q_action = tf.reduce_sum(tf.mul(self.Q_value,self.action_input),reduction_indices = 1)
-        self.cost = tf.reduce_mean(tf.square(self.y_input - Q_action))
+        P_action = tf.reduce_sum(tf.mul(self.PG_value,self.action_input),reduction_indices = 1)
+        self.cost = tf.reduce_mean(tf.square(self.y_input - P_action))
         tf.scalar_summary("loss",self.cost)
         global merged_summary_op
         merged_summary_op = tf.merge_all_summaries()
         self.optimizer = tf.train.AdamOptimizer(0.0001).minimize(self.cost)
 
-    def perceive(self,state,action,reward,next_state,done):
-        self.time_step += 1
-        one_hot_action = np.zeros(self.action_dim)
-        one_hot_action[action] = 1
-        self.replay_buffer.append((state,one_hot_action,reward,next_state,done))
-        #pdb.set_trace();
-        if len(self.replay_buffer) > REPLAY_SIZE:
-            self.replay_buffer.popleft()
+    def perceive(self,states,epd):
+        self.replay_buffer.append((states,epd))
 
-        if len(self.replay_buffer) > 2000:
-            self.train_Q_network()
-
-    def train_Q_network(self):
+    def train_pg_network(self):
         
         # Step 1: obtain random minibatch from replay memory
         minibatch = random.sample(self.replay_buffer,BATCH_SIZE)
@@ -92,14 +85,14 @@ class PG():
         # Step 2: calculate y
         y_batch = []
         #pdb.set_trace();
-        Q_value_batch = self.Q_value.eval(feed_dict={self.state_input:next_state_batch})
+        PG_value_batch = self.PG_value.eval(feed_dict={self.state_input:next_state_batch})
         for i in range(0,BATCH_SIZE):
             pdb.set_trace();
             done = minibatch[i][4]
             if done:
                 y_batch.append(reward_batch[i])
             else :
-                y_batch.append(reward_batch[i] + GAMMA * np.max(Q_value_batch[i]))
+                y_batch.append(reward_batch[i] + GAMMA * np.max(PG_value_batch[i]))
 
         self.optimizer.run(feed_dict={
             self.y_input:y_batch,
@@ -117,20 +110,23 @@ class PG():
         if self.time_step % 1000 == 0:
             self.saver.save(self.session, 'saved_networks/' + 'network' + '-pg', global_step = self.time_step)
 
-    def egreedy_action(self,state):
-        Q_value = self.Q_value.eval(feed_dict = {
+    def policy_forward(self,state):
+        PG_value = self.PG_value.eval(feed_dict = {
             self.state_input:[state]
             })[0]
-        if random.random() <= self.epsilon:
-            return random.randint(0,self.action_dim - 1)
+        prob = np.amax(PG_value)
+        action = np.argmax(PG_value)
+        if np.random.uniform() < prob:
+            grad = 1 - prob
         else:
-            return np.argmax(Q_value)
-
-        if self.time_step > 2000:
-            self.epsilon -= (INITIAL_EPSILON - FINAL_EPSILON)/10000
+            grad = -prob
+            temp_list = xrange(len(PG_value))
+            del temp_list [action]
+            action = np.random.choice(temp_list)
+        return prob, action, grad
 
     def action(self,state):
-        return np.argmax(self.Q_value.eval(feed_dict = {
+        return np.argmax(self.PG_value.eval(feed_dict = {
             self.state_input:[state]
             })[0])
 
@@ -142,76 +138,68 @@ class PG():
         initial = tf.constant(0.01, shape = shape)
         return tf.Variable(initial)
 
+    def discounted_rewards(rewards):
+        reward_discounted = np.zeros_like(rewards)
+        track = 0
+        for index in reversed(xrange(len(rewards))):
+            track = track * GAMMA + rewards[index]
+            reward_discounted[index] = track
+        return reward_discounted
+
+
 # ---------------------------------------------------------
-# Hyper Parameters
+ENV_NAME = 'Pong-v0'
 EPISODE = 10000 # Episode limitation
-STEP = 9 #Steps in an episode
+STEP = 300 # Step limitation in an episode
 TEST = 10 # The number of experiment test every 100 episode
-ITERATION = 10
 
 def main():
     # initialize OpenAI Gym env and dqn agent
-    #env = gym.make(ENV_NAME)
-    data_dictionary = get_intial_data()
-    agent = PG(data_dictionary)
-    data = data_dictionary["x_train"]
+    env = gym.make(ENV_NAME)
+    agent = PG(env)
+    state_list, reward_list, grad_list = [],[],[]
+    episode_number = 0
 
-    for iter in xrange(ITERATION):
-        print(iter)
-        for episode in xrange(len(data)):
-            # initialize task
-            episode_data = data[episode]
-            portfolio = 0
-            portfolio_value = 100
-            # Train 
+    while True:
+        # initialize task
+        state = env.reset()
+        # Train 
+        prob, action, grad = agent.policy_forward_greedy(state) # e-greedy action for train
+        state_list.append(state)
+        state,reward,done,_ = env.step(action)
+        reward_list.append(reward)
+        grad_list.append(grad)
+        if done:
+            episode_number += 1
+            epx = np.vstack(state_list)
+            epr = np.vstack(reward_list)
+            epd = np.vstack(grad_list)
+            discounted_epr = discounted_rewards(epr)
+            discounted_epr -= np.mean(discounted_epr)
+            discounted_epr /= np.std(discounted_epr)
+            epd *= discounted_epr
+            agent.perceive(epx,epd)
+            break
+        if episode_number % BATCH_SIZE == 0:
+            #train model
+            train_pg_network(self)
+            self.replay_buffer = deque()
+        # Test every 100 episodes
+        if episode % 100 == 0:
             total_reward = 0
-            for step in xrange(STEP):
-                state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
-                total_reward += reward
-                agent.perceive(state,action,reward,next_state,done)
-                if done:
-                    break
-            # Test every 100 episodes
-            if episode % 100 == 0 and episode > 10:
-                total_reward = 0
-                for i in xrange(10):
-                    for step in xrange(STEP):
-                        state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
-                        total_reward += reward
-                        if done:
-                            break
-                ave_reward = total_reward/10
-                print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
-
-        #on test data
-        data = data_dictionary["x_test"]
-        for episode in xrange(len(data)):
-            episode_data = data[episode]
-            portfolio = 0
-            portfolio_value = 100
-            total_reward = 0
-            for step in xrange(STEP):
-                state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
-                total_reward += reward
-                if done:
-                    break
-            print 'episode: ',episode,'Testing Average Reward:',total_reward
-
-def env_stage_data(agent, step, episode_data, portfolio, portfolio_value):
-    state = episode_data[step] + [portfolio]
-    action = agent.egreedy_action(state) # e-greedy action for train
-    #print(step)
-    if step < STEP - 2:
-        new_state = episode_data[step+1] 
-    else:
-        new_state = episode_data[step+1]
-    if step == STEP - 1:
-        done = True
-    else:
-        done = False
-    next_state,reward,done,portfolio,portfolio_value = new_stage_data(action, portfolio, state, new_state, portfolio_value, done)
-    return state, action, next_state, reward, done, portfolio, portfolio_value
-            
+            for i in xrange(TEST):
+                state = env.reset()
+                for j in xrange(STEP):
+                    env.render()
+                    action = agent.action(state) # direct action for test
+                    state,reward,done,_ = env.step(action)
+                    total_reward += reward
+                    if done:
+                        break
+            ave_reward = total_reward/TEST
+            print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
+            if ave_reward >= 200:
+                break
 
 if __name__ == '__main__':
     main()
