@@ -1,5 +1,5 @@
 #Reinforcement-trading
-This project uses Reinforcement learning on stock market and agent tries to learn trading. The goal is to check if the agent can learn to read tape. The project is dedicated to hero in life great Jesse Livermore.
+This project uses Reinforcement learning on stock market and agent tries to learn trading. The goal is to check if the agent can learn to read tape. The project is dedicated to hero in life great Jesse Livermore and one of the best human i know in life Ryan Booth.
 
 
 #Steps to Reproduce DQN
