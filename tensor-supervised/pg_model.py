@@ -25,9 +25,22 @@ class PG():
         self.time_step = 0
         self.epsilon = INITIAL_EPSILON
         self.state_dim = env.observation_space.shape[0]
-        self.action_dim = env.action_space.n 
-
-        self.create_pg_network()
+        self.action_dim = env.action_space.n
+        self.n_input = self.state_dim
+        n_hidden_1 = 60
+        n_hidden_2 = 20
+        
+        weights = {
+        'h1': tf.Variable(tf.random_normal([self.n_input, n_hidden_1])),
+        'h2': tf.Variable(tf.random_normal([n_hidden_1, n_hidden_2])),
+        'out': tf.Variable(tf.random_normal([n_hidden_2, self.action_dim]))
+        }
+        biases = {
+        'b1': tf.Variable(tf.random_normal([n_hidden_1])),
+        'b2': tf.Variable(tf.random_normal([n_hidden_2])),
+        'out': tf.Variable(tf.random_normal([self.action_dim]))
+        }
+        self.create_pg_network(weights,biases)
         self.create_training_method()
 
         # Init session
@@ -46,64 +59,36 @@ class PG():
         global summary_writer
         summary_writer = tf.train.SummaryWriter('logs',graph=self.session.graph)
 
-    def create_pg_network(self):
+    def create_pg_network(self, weights, biases):
         # network weights
-        W1 = self.weight_variable([self.state_dim,20])
-        b1 = self.bias_variable([20])
-        W2 = self.weight_variable([20,self.action_dim])
-        b2 = self.bias_variable([self.action_dim])
-        # input layer
-        self.state_input = tf.placeholder("float",[None,self.state_dim])
-        # hidden layers
-        h_layer = tf.nn.relu(tf.matmul(self.state_input,W1) + b1)
-        # Q Value layer
-        self.PG_value = tf.matmul(h_layer,W2) + b2
-
-
+        layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
+        layer_1 = tf.nn.relu(layer_1)
+        layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
+        layer_2 = tf.nn.relu(layer_2)
+        self.PG_value = tf.matmul(layer_2, weights['out']) + biases['out']
+        
     def create_training_method(self):
-        self.action_input = tf.placeholder("float",[None,self.action_dim]) # one hot presentation
-        self.y_input = tf.placeholder("float",[None])
-        P_action = tf.reduce_sum(tf.mul(self.PG_value,self.action_input),reduction_indices = 1)
-        self.cost = tf.reduce_mean(tf.square(self.y_input - P_action))
+        self.state_input = tf.placeholder("float", [None, self.n_input])
+        self.y_input = tf.placeholder("float", [None, self.action_dim])
+        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(self.PG_value, self.y_input))
         tf.scalar_summary("loss",self.cost)
         global merged_summary_op
         merged_summary_op = tf.merge_all_summaries()
-        self.optimizer = tf.train.AdamOptimizer(0.0001).minimize(self.cost)
+        self.optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE).minimize(self.cost)
 
     def perceive(self,states,epd):
         self.replay_buffer.append((states,epd))
 
     def train_pg_network(self):
         
-        # Step 1: obtain random minibatch from replay memory
-        minibatch = random.sample(self.replay_buffer,BATCH_SIZE)
-        state_batch = [data[0] for data in minibatch]
-        action_batch = [data[1] for data in minibatch]
-        reward_batch = [data[2] for data in minibatch]
-        next_state_batch = [data[3] for data in minibatch]
-
-        # Step 2: calculate y
-        y_batch = []
-        #pdb.set_trace();
-        PG_value_batch = self.PG_value.eval(feed_dict={self.state_input:next_state_batch})
-        for i in range(0,BATCH_SIZE):
-            pdb.set_trace();
-            done = minibatch[i][4]
-            if done:
-                y_batch.append(reward_batch[i])
-            else :
-                y_batch.append(reward_batch[i] + GAMMA * np.max(PG_value_batch[i]))
-
         self.optimizer.run(feed_dict={
             self.y_input:y_batch,
-            self.action_input:action_batch,
             self.state_input:state_batch
             })
-        summary_str = self.session.run(merged_summary_op,feed_dict={
-                self.y_input : y_batch,
-                self.action_input : action_batch,
-                self.state_input : state_batch
-                })
+        summary_str = self.session.run(merged_summary_op,feed_dict=feed_dict={
+            self.y_input:y_batch,
+            self.state_input:state_batch
+            })
         summary_writer.add_summary(summary_str,self.time_step)
 
         # save network every 1000 iteration
