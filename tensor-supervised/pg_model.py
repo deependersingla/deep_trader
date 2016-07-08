@@ -19,9 +19,9 @@ LEARNING_RATE = 1e-4
 
 class PG():
     # DQN Agent
-    def __init__(self):
+    def __init__(self, env):
         # init some parameters
-        self.replay_buffer = deque()
+        self.replay_buffer = []
         self.time_step = 0
         self.epsilon = INITIAL_EPSILON
         self.state_dim = env.observation_space.shape[0]
@@ -40,6 +40,8 @@ class PG():
         'b2': tf.Variable(tf.random_normal([n_hidden_2])),
         'out': tf.Variable(tf.random_normal([self.action_dim]))
         }
+        self.state_input = tf.placeholder("float", [None, self.n_input])
+        self.y_input = tf.placeholder("float",[None])
         self.create_pg_network(weights,biases)
         self.create_training_method()
 
@@ -61,51 +63,53 @@ class PG():
 
     def create_pg_network(self, weights, biases):
         # network weights
-        layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
+        layer_1 = tf.add(tf.matmul(self.state_input, weights['h1']), biases['b1'])
         layer_1 = tf.nn.relu(layer_1)
         layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
         layer_2 = tf.nn.relu(layer_2)
         self.PG_value = tf.matmul(layer_2, weights['out']) + biases['out']
         
     def create_training_method(self):
-        self.state_input = tf.placeholder("float", [None, self.n_input])
-        self.y_input = tf.placeholder("float", [None, self.action_dim])
-        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(self.PG_value, self.y_input))
+        #this needs to be updated to use softmax
+        P_action = tf.reduce_sum(self.PG_value,reduction_indices = 1)
+        self.cost = tf.reduce_mean(tf.square(self.y_input - P_action))
+        #self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(value, self.y_input))
         tf.scalar_summary("loss",self.cost)
         global merged_summary_op
         merged_summary_op = tf.merge_all_summaries()
         self.optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE).minimize(self.cost)
 
     def perceive(self,states,epd):
-        self.replay_buffer.append((states,epd))
+        temp = []
+        for index, value in enumerate(states):
+            temp.append([states[index], epd[index]])
+        self.replay_buffer += temp
 
     def train_pg_network(self):
-        
-        self.optimizer.run(feed_dict={
-            self.y_input:y_batch,
-            self.state_input:state_batch
-            })
-        summary_str = self.session.run(merged_summary_op,feed_dict=feed_dict={
+        minibatch = random.sample(self.replay_buffer,BATCH_SIZE*5)
+        state_batch = [data[0] for data in minibatch]
+        y_batch = [data[1] for data in minibatch]
+        self.optimizer.run(feed_dict={self.y_input:y_batch,self.state_input:state_batch})
+        summary_str = self.session.run(merged_summary_op,feed_dict={
             self.y_input:y_batch,
             self.state_input:state_batch
             })
         summary_writer.add_summary(summary_str,self.time_step)
+        self.replay_buffer = []
 
         # save network every 1000 iteration
         if self.time_step % 1000 == 0:
             self.saver.save(self.session, 'saved_networks/' + 'network' + '-pg', global_step = self.time_step)
 
     def policy_forward(self,state):
-        PG_value = self.PG_value.eval(feed_dict = {
-            self.state_input:[state]
-            })[0]
+        PG_value = self.PG_value.eval(feed_dict = {self.state_input:[state]})[0]
         prob = np.amax(PG_value)
         action = np.argmax(PG_value)
         if np.random.uniform() < prob:
             grad = 1 - prob
         else:
             grad = -prob
-            temp_list = xrange(len(PG_value))
+            temp_list = list(xrange(len(PG_value)))
             del temp_list [action]
             action = np.random.choice(temp_list)
         return prob, action, grad
@@ -123,7 +127,7 @@ class PG():
         initial = tf.constant(0.01, shape = shape)
         return tf.Variable(initial)
 
-    def discounted_rewards(rewards):
+    def discounted_rewards(self,rewards):
         reward_discounted = np.zeros_like(rewards)
         track = 0
         for index in reversed(xrange(len(rewards))):
@@ -133,10 +137,10 @@ class PG():
 
 
 # ---------------------------------------------------------
-ENV_NAME = 'Pong-v0'
+ENV_NAME = 'CartPole-v0'
 EPISODE = 10000 # Episode limitation
 STEP = 300 # Step limitation in an episode
-TEST = 10 # The number of experiment test every 100 episode
+TEST = 20 # The number of experiment test every 100 episode
 
 def main():
     # initialize OpenAI Gym env and dqn agent
@@ -144,33 +148,31 @@ def main():
     agent = PG(env)
     state_list, reward_list, grad_list = [],[],[]
     episode_number = 0
+    state = env.reset()
 
     while True:
-        # initialize task
-        state = env.reset()
+        # initialize tase
         # Train 
-        prob, action, grad = agent.policy_forward_greedy(state) # e-greedy action for train
+        prob, action, grad = agent.policy_forward(state) # e-greedy action for train
         state_list.append(state)
         state,reward,done,_ = env.step(action)
         reward_list.append(reward)
         grad_list.append(grad)
         if done:
             episode_number += 1
-            epx = np.vstack(state_list)
-            epr = np.vstack(reward_list)
-            epd = np.vstack(grad_list)
-            discounted_epr = discounted_rewards(epr)
+            print(episode_number)
+            discounted_epr = agent.discounted_rewards(reward_list)
             discounted_epr -= np.mean(discounted_epr)
             discounted_epr /= np.std(discounted_epr)
-            epd *= discounted_epr
-            agent.perceive(epx,epd)
-            break
-        if episode_number % BATCH_SIZE == 0:
-            #train model
-            train_pg_network(self)
-            self.replay_buffer = deque()
-        # Test every 100 episodes
-        if episode % 100 == 0:
+            grad_list *= discounted_epr
+            agent.perceive(state_list,grad_list)
+            state = env.reset()
+            state_list, reward_list, grad_list = [],[],[]
+            if episode_number % BATCH_SIZE == 0:
+              #train model
+              agent.train_pg_network()
+        #test every 100 rewards
+        if episode_number % 100 == 0:
             total_reward = 0
             for i in xrange(TEST):
                 state = env.reset()
@@ -182,7 +184,7 @@ def main():
                     if done:
                         break
             ave_reward = total_reward/TEST
-            print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
+            print 'episode: ',episode_number,'Evaluation Average Reward:',ave_reward
             if ave_reward >= 200:
                 break
 

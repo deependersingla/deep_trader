@@ -97,7 +97,6 @@ class DQN():
 		#pdb.set_trace();
 		Q_value_batch = self.Q_value.eval(feed_dict={self.state_input:next_state_batch})
 		for i in range(0,BATCH_SIZE):
-			pdb.set_trace();
 			done = minibatch[i][4]
 			if done:
 				y_batch.append(reward_batch[i])
