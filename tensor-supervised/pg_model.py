@@ -86,7 +86,7 @@ class PG():
         self.replay_buffer += temp
 
     def train_pg_network(self):
-        minibatch = random.sample(self.replay_buffer,BATCH_SIZE*5)
+        minibatch = random.sample(self.replay_buffer,BATCH_SIZE)
         state_batch = [data[0] for data in minibatch]
         y_batch = [data[1] for data in minibatch]
         self.optimizer.run(feed_dict={self.y_input:y_batch,self.state_input:state_batch})
@@ -160,7 +160,7 @@ def main():
         grad_list.append(grad)
         if done:
             episode_number += 1
-            print(episode_number)
+            #print(episode_number)
             discounted_epr = agent.discounted_rewards(reward_list)
             discounted_epr -= np.mean(discounted_epr)
             discounted_epr /= np.std(discounted_epr)
@@ -171,22 +171,21 @@ def main():
             if episode_number % BATCH_SIZE == 0:
               #train model
               agent.train_pg_network()
-        #test every 100 rewards
-        if episode_number % 100 == 0:
-            total_reward = 0
-            for i in xrange(TEST):
-                state = env.reset()
-                for j in xrange(STEP):
-                    env.render()
-                    action = agent.action(state) # direct action for test
-                    state,reward,done,_ = env.step(action)
-                    total_reward += reward
-                    if done:
-                        break
-            ave_reward = total_reward/TEST
-            print 'episode: ',episode_number,'Evaluation Average Reward:',ave_reward
-            if ave_reward >= 200:
-                break
+            #test every 100 rewards
+            if episode_number % 100 == 0 and episode_number > 100:
+                total_reward = 0
+                for i in xrange(TEST):
+                    state = env.reset()
+                    for j in xrange(STEP):
+                        #env.render()
+                        action = agent.action(state) # direct action for test
+                        state,reward,done,_ = env.step(action)
+                        total_reward += reward
+                        if done:
+                            state = env.reset()
+                            break
+                ave_reward = total_reward/TEST
+                print 'episode: ',episode_number,'Evaluation Average Reward:',ave_reward
 
 if __name__ == '__main__':
     main()
