@@ -1,1 +1,2 @@
 a) Sometime the highest price in a interval become less than lowest price of interval because of moving average standardization, is that a problem?
+b) Stock data is partial MDP, find which algorithm will work on Partial MDP. It's partial MDP because at a particular time the next stage is not only dependendent on action taken by one trader. It's dependent on all market. A Markov decision process relies on the Markov assumption, that the probability of the next state si+1 depends only on current state si and action ai, but not on preceding states or actions.
