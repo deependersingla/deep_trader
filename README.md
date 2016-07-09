@@ -1,8 +1,7 @@
 #Reinforcement-trading
 This project uses Reinforcement learning on stock market and agent tries to learn trading. The goal is to check if the agent can learn to read tape. The project is dedicated to hero in life great Jesse Livermore and one of the best human i know in life Ryan Booth https://github.com/ryanabooth.
 
-#Few Point to note, if you are reading this:<br>
-a) The code inside tensor-reinforcement is the latest code and you should be reading/running if you are interested in it. Leave other directory, I am not working on them for now<br>
+One Point to note, the code inside tensor-reinforcement is the latest code and you should be reading/running if you are interested in project. Leave other directories, I am not working on them for now<br>
 
 #Steps to Reproduce DQN
 a) cd tensor-reinforcement <br>
@@ -45,43 +44,15 @@ https://docs.google.com/document/d/12TmodyT4vZBViEbWXkUIgRW_qmL1rTW00GxSMqYGNHU/
 
 
 Data sources
-1) For directly running this repo, use this data source and you are all setup: https://drive.google.com/open?id=0B6ZrYxEMNGR-MEd5Ti0tTEJjMTQ
-
-2) Nifty Data: https://drive.google.com/folderview?id=0B8e3dtbFwQWUZ1I5dklCMmE5M2M&ddrp=1%20%E2%81%A0%E2%81%A0%E2%81%A0%E2%81%A09:05%20PM%E2%81%A0%E2%81%A0%E2%81%A0%E2%81%A0%E2%81%A0
-
-
-
-3) Nifty futures:http://www.4shared.com/folder/Fv9Jm0bS/NSE_Futures
+1) For directly running this repo, use this data source and you are all setup: https://drive.google.com/open?id=0B6ZrYxEMNGR-MEd5Ti0tTEJjMTQ<br>
+2) Nifty Data: https://drive.google.com/folderview?id=0B8e3dtbFwQWUZ1I5dklCMmE5M2M&ddrp=1%20%E2%81%A0%E2%81%A0%E2%81%A0%E2%81%A09:05%20PM%E2%81%A0%E2%81%A0%E2%81%A0%E2%81%A0%E2%81%A0<br>
+3) Nifty futures:http://www.4shared.com/folder/Fv9Jm0bS/NSE_Futures<br>
+4) Google finance <br>
+5) Interative Brokers<br> I use this because I have an account with them.
 
 
-3) Google finance: The package connects with Google Finance and downloads a spreadsheet from:http://www.google.com/finance/getprices?q=.DJI&x=INDEXDJX&i=60&p=10d&f=d,c,h,l,o,v with the date (intra-daily), closing price, high, low, open and volume.
 
-You can adjust this to your own preferences by 'seeing' the code as:http://www.google.com/finance/getprices?q=TICKER&x=EXCHANGE&i=INTERVAL&p=PERIOD&f=d,c,h,l,o,v.
-
-Where:
-
-TICKER: is the unique ticker symbol
-
-EXCHANGE: is where the security is listed on
-
-Hint: to track these inputs, for instance for the Dow Jones Industrial Average, you search the security of interest at Google Finance and then you can find at the top: (INDEXDJX:.DJI) which obviously refers to (EXCHANGE:TICKER).
-INTERVAL: defines the frequency (60 = 60 seconds)
-
-PERIOD: is the historical data period (see also Google Finance), here 10d refers to the past 10 days (up to current time).
-
-
-#Dependencies
-1) https://github.com/tensorflow/tensorflow
-2) https://github.com/pfnet/chainer (if wants to use chainer)
-3) https://github.com/blampe/IbPy
-
-External help
-1) https://github.com/nivwusquorum/tensorflow-deepq
-2) Deep-Q-chainer
-https://github.com/ugo-nama-kun/DQN-chainer
-
-
-#For reading on getting data using IB
+#For reading on getting data using Interative Broker
 https://www.interactivebrokers.com/en/software/api/apiguide/tables/historical_data_limitations.htm
 https://www.interactivebrokers.com/en/software/api/apiguide/java/historicaldata.htm
 symbol: stock -> STK, Indices -> IND
