@@ -52,11 +52,11 @@ class PG():
         # loading networks
         self.saver = tf.train.Saver()
         checkpoint = tf.train.get_checkpoint_state("saved_networks")
-        #if checkpoint and checkpoint.model_checkpoint_path:
-         #       self.saver.restore(self.session, checkpoint.model_checkpoint_path)
-          #      print "Successfully loaded:", checkpoint.model_checkpoint_path
-        #else:
-        #       print "Could not find old network weights"
+        if checkpoint and checkpoint.model_checkpoint_path:
+            self.saver.restore(self.session, checkpoint.model_checkpoint_path)
+            print "Successfully loaded:", checkpoint.model_checkpoint_path
+        else:
+            print "Could not find old network weights"
 
         global summary_writer
         summary_writer = tf.train.SummaryWriter('logs',graph=self.session.graph)
