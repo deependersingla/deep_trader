@@ -1,13 +1,19 @@
 #Reinforcement-trading
 This project uses Reinforcement learning on stock market and agent tries to learn trading. The goal is to check if the agent can learn to read tape. The project is dedicated to hero in life great Jesse Livermore and one of the best human i know in life Ryan Booth https://github.com/ryanabooth.
 
+#Few Point to note, if you are reading this:<br>
+a) The code inside tensor-reinforcement is the latest code and you should be reading/running if you are interested in it. Leave other directory, I am not working on them for now<br>
 
 #Steps to Reproduce DQN
-a) Copy data from here https://drive.google.com/file/d/0B6ZrYxEMNGR-MEd5Ti0tTEJjMTQ/view into tensor-supervised directory.<br>
+a) cd tensor-reinforcement <br>
+b) Copy data from here https://drive.google.com/file/d/0B6ZrYxEMNGR-MEd5Ti0tTEJjMTQ/view into tensor-reinforcement directory.<br>
 b) Create a directory saved_networks inside tensor_supervised for saving networks.<br>
-c) Run python dqn_model.py for DQN.<br>
+c) python dqn_model.py<br>
 
-Currently, I am working on implementing PG.
+#steps to Reproduce PG, currently on OPEN AI gym environment:
+a) cd tensor-reinforcement <br>
+b) Create a directory saved_networks inside tensor_supervised for saving networks.<br>
+c) python pg_model.py
 
 Before this, I used RL here: http://somedeepthoughtsblog.tumblr.com/post/134793589864/maths-versus-computation
 
