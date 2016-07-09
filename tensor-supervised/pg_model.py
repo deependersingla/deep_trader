@@ -52,22 +52,23 @@ class PG():
         # loading networks
         self.saver = tf.train.Saver()
         checkpoint = tf.train.get_checkpoint_state("saved_networks")
-        if checkpoint and checkpoint.model_checkpoint_path:
-                self.saver.restore(self.session, checkpoint.model_checkpoint_path)
-                print "Successfully loaded:", checkpoint.model_checkpoint_path
-        else:
-                print "Could not find old network weights"
+        #if checkpoint and checkpoint.model_checkpoint_path:
+         #       self.saver.restore(self.session, checkpoint.model_checkpoint_path)
+          #      print "Successfully loaded:", checkpoint.model_checkpoint_path
+        #else:
+        #       print "Could not find old network weights"
 
         global summary_writer
         summary_writer = tf.train.SummaryWriter('logs',graph=self.session.graph)
 
     def create_pg_network(self, weights, biases):
         # network weights
-        layer_1 = tf.add(tf.matmul(self.state_input, weights['h1']), biases['b1'])
-        layer_1 = tf.nn.relu(layer_1)
-        layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
-        layer_2 = tf.nn.relu(layer_2)
-        self.PG_value = tf.nn.softmax(tf.matmul(layer_2, weights['out']) + biases['out'])
+        W1 = self.weight_variable([self.state_dim,20])
+        b1 = self.bias_variable([20])
+        W2 = self.weight_variable([20,self.action_dim])
+        b2 = self.bias_variable([self.action_dim])
+        h_layer = tf.nn.relu(tf.matmul(self.state_input,W1) + b1)
+        self.PG_value = tf.nn.softmax(tf.matmul(h_layer,W2) + b2)
         
     def create_training_method(self):
         #this needs to be updated to use softmax
@@ -87,10 +88,10 @@ class PG():
         self.replay_buffer += temp
 
     def train_pg_network(self):
-        #minibatch = random.sample(self.replay_buffer,BATCH_SIZE*5)
-        state_batch = [data[0] for data in self.replay_buffer]
-        y_batch = [data[1] for data in self.replay_buffer]
-        pdb.set_trace();
+        minibatch = random.sample(self.replay_buffer,BATCH_SIZE*5)
+        state_batch = [data[0] for data in minibatch]
+        y_batch = [data[1] for data in minibatch]
+        #pdb.set_trace();
         self.optimizer.run(feed_dict={self.y_input:y_batch,self.state_input:state_batch})
         summary_str = self.session.run(merged_summary_op,feed_dict={
             self.y_input:y_batch,
@@ -109,11 +110,6 @@ class PG():
         y = np.zeros([self.action_dim])
         y[action] = 1
         return y, action
-
-    def action(self,state):
-        return np.argmax(self.PG_value.eval(feed_dict = {
-            self.state_input:[state]
-            })[0])
 
     def weight_variable(self,shape):
         initial = tf.truncated_normal(shape)
@@ -152,8 +148,11 @@ def main():
         grad, action = agent.policy_forward(state) # e-greedy action for train
         state_list.append(state)
         state,reward,done,_ = env.step(action)
+        #print(action)
         reward_list.append(reward)
+        #print(reward)
         grad_list.append(grad)
+        #print(grad_list)
         if done:
             episode_number += 1
             #print(episode_number)
@@ -163,6 +162,7 @@ def main():
             discounted_epr /= np.std(discounted_epr)
             epdlogp = np.vstack(grad_list)
             epdlogp *= discounted_epr
+            #print(epdlogp)
             agent.perceive(state_list, epdlogp)
             state = env.reset()
             state_list, reward_list, grad_list = [],[],[]
