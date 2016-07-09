@@ -14,15 +14,14 @@ a) cd tensor-reinforcement <br>
 b) Create a directory saved_networks inside tensor_supervised for saving networks.<br>
 c) python pg_model.py
 
-Before this, I used RL here: http://somedeepthoughtsblog.tumblr.com/post/134793589864/maths-versus-computation
 
+#For the first iteration of the project
 Process:<br>
 Intially I started by using Chainer for the project for both supervised and reinforcement learning.  In middle of it AlphaGo (https://research.googleblog.com/2016/01/alphago-mastering-ancient-game-of-go.html) came because of it I shifted to read Sutton book on RL (https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html), AlphaGo and related papers, David Silver lectures (http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html, they are great). 
 
-I am coming back to project after some time a lot has changed. All the cool kids even DeepMind (the gods) have started using TensorFlow. Hence, I am ditching Chainer and will use Tensorflow from now. Exciting times ahead.
+I am coming back to project after some time a lot has changed. All the cool kids even DeepMind (the gods) have started using TensorFlow. Hence, I am ditching Chainer and will use Tensorflow from now. Exciting times ahead. Before this, I used RL here: http://somedeepthoughtsblog.tumblr.com/post/134793589864/maths-versus-computation
 
 
-#For the first iteration of the project
 #Policy network
 I will be starting with simple feed-forward network. Though, I am also inclined to use convolutional network reason, they do very well when the minor change in input should not change ouput. For example: In image recognizition, a small pixel values change doesn't meam image is changed. Intutively stocks numbers look same to me, a small change should not trigger a trade but again the problem here comes with normalization. With normalization the big change in number will be reduced to a very small in inputs hence its good to start with feed-forward.
 
