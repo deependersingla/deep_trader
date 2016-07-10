@@ -16,11 +16,14 @@ import cPickle as pickle
 import shelve
 import six
 from six.moves.urllib import request
+import hashlib
+import json
+
 
 episode = 10 #lenght of one episode
 data_array = []
 parent_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..'))
-raw_data_file  = os.path.join(parent_dir,'tensor-supervised/NIFTY.csv') 
+raw_data_file  = os.path.join(parent_dir,'tensor-reinforcement/NIFTY50.csv') 
 moving_average_number = 1000 #number of time interval for calculating moving average
 #pdb.set_trace()
 
@@ -29,6 +32,7 @@ def prepare_data():
 	average_dataset = []
 	total_data = []
 	temp_episode = []
+	data_dict = {}
 	index = 0
 	for data in stock_data:
 		temp = [data[2], data[3], data[4], data[5],data[8]]
@@ -48,22 +52,29 @@ def prepare_data():
 			vector.extend(last_one_hour_average)
 			vector.extend(last_one_day_average)
 			vector.extend(last_3_day_average)
+			data_dict[list_md5_string_value(vector)] = temp
 			total_data.append(vector)
-			#temp_episode.append(vector)
-			#if index % 10 == 0:
-			#	total_data.append(temp_episode)
-			#	temp_episode = []
 		index += 1
-	with open("data_1.pkl", "wb") as myFile:
+	with open("data.pkl", "wb") as myFile:
 		six.moves.cPickle.dump(total_data, myFile, -1)
 	print("Done")
+	with open("data_dict.pkl","wb") as myFile:
+		six.moves.cPickle.dump(data_dict, myFile, -1)
 
 def find_average(data):
     return np.mean(data, axis=0)
 
 def load_data(file,episode):
+	data = load_file_data(file)
+	return map(list,zip(*[iter(data)]*episode))
+
+def load_file_data(file):
 	with open(file, 'rb') as myFile:
 		data = six.moves.cPickle.load(myFile)
-		return map(list,zip(*[iter(data)]*episode))
+	return data
+
+def list_md5_string_value(list):
+	string = json.dumps(list)
+	return hashlib.md5(string).hexdigest()
 
 #prepare_data()
