@@ -5,7 +5,7 @@ One Point to note, the code inside tensor-reinforcement is the latest code and y
 
 #Steps to reproduce DQN
 a) cd tensor-reinforcement <br>
-b) Copy data from here https://drive.google.com/file/d/0B6ZrYxEMNGR-MEd5Ti0tTEJjMTQ/view into tensor-reinforcement directory.<br>
+b) Copy data from https://drive.google.com/file/d/0B6ZrYxEMNGR-MEd5Ti0tTEJjMTQ/view into tensor-reinforcement directory and https://drive.google.com/file/d/0B6ZrYxEMNGR-TFI4YVMzUHBjYVk/view?usp=sharing.<br>
 b) Create a directory saved_networks inside tensor_supervised for saving networks.<br>
 c) python dqn_model.py<br>
 
