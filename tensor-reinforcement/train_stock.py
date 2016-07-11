@@ -18,7 +18,7 @@ import six
 import episodic_data
 from six.moves.urllib import request
 
-data = episodic_data.load_data("data_1.pkl",episode=10)
+data = episodic_data.load_data("data.pkl",episode=10)
 data_dict = episodic_data.load_file_data("data_dict.pkl")
 x_train, x_test = train_test_split(data, test_size=0.10, random_state=123)
 action_map = {0: "Hold", 1: "Buy", 2: "Sell"}
@@ -65,6 +65,13 @@ def new_stage_data(action,portfolio,old_state,new_state,portfolio_value,done):
 def show_trader_path(actions, episode_data):
     for index, action in enumerate(actions):
         episode = episode_data[index]
-        action = action_map[actions[index]]
+        action_name = action_map[actions[index]]
         data =  data_dict[episodic_data.list_md5_string_value(episode)]
-        print(data, action)
+        if action == 2:
+            price = data[2]
+        elif action == 1:
+            price = data[1]
+        elif action == 0:
+            price = data[1]
+        #print(data)
+        print(action_name,price)
