@@ -4,3 +4,4 @@ b) The above idea actually helped and showed me that the way I have implemented 
 1) Take average of opening, closing , highest and lowest price and use that price for that particular minute. If time interval is greater than minute take average of first minutes and then use those minutes average to take time interval average.
 2) Make a second network which main task is just to select time when to execute trading action based on continous stream of time-price data trader is receving. This will be a good system to implement above deep_trader.
 I will first go with first now and mostly will implement 2 later above it. I think implementing both will be good idea.
+c) I also need to update standardization of data and reward system to use actual pricing rather than normalized price.
