@@ -52,7 +52,9 @@ def prepare_data():
 			vector.extend(last_one_hour_average)
 			vector.extend(last_one_day_average)
 			vector.extend(last_3_day_average)
-			data_dict[list_md5_string_value(vector)] = temp
+			average_price = sum(temp[0:-2]) / float(len(temp[0:-2]))
+			dict_vector = temp + [average_price]
+			data_dict[list_md5_string_value(vector)] = dict_vector
 			total_data.append(vector)
 		index += 1
 	with open("data.pkl", "wb") as myFile:

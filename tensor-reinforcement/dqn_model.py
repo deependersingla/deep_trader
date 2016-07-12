@@ -164,7 +164,7 @@ def main():
 			# initialize task
 			episode_data = data[episode]
 			portfolio = 0
-			portfolio_value = 100
+			portfolio_value = 0
 			# Train 
 			total_reward = 0
 			for step in xrange(STEP):
@@ -214,7 +214,7 @@ def env_stage_data(agent, step, episode_data, portfolio, portfolio_value):
 		done = True
 	else:
 		done = False
-	next_state,reward,done,portfolio,portfolio_value = new_stage_data(action, portfolio, state, new_state, portfolio_value, done)
+	next_state,reward,done,portfolio,portfolio_value = new_stage_data(action, portfolio, state, new_state, portfolio_value, done, episode_data[step])
 	return state, action, next_state, reward, done, portfolio, portfolio_value
 			
 
