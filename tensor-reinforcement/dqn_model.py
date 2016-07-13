@@ -123,13 +123,14 @@ class DQN():
 		Q_value = self.Q_value.eval(feed_dict = {
 			self.state_input:[state]
 			})[0]
+		#print(self.time_step)
+		#print(self.epsilon)
+		if self.time_step > 200000:
+			self.epsilon -= (INITIAL_EPSILON - FINAL_EPSILON)/500000
 		if random.random() <= self.epsilon:
 			return random.randint(0,self.action_dim - 1)
 		else:
 			return np.argmax(Q_value)
-
-		if self.time_step > 2000:
-			self.epsilon -= (INITIAL_EPSILON - FINAL_EPSILON)/10000
 
 	def action(self,state):
 		return np.argmax(self.Q_value.eval(feed_dict = {
@@ -169,7 +170,7 @@ def main():
 			# Train 
 			total_reward = 0
 			for step in xrange(STEP):
-				state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
+				state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value, True)
 				total_reward += reward
 				agent.perceive(state,action,reward,next_state,done)
 				if done:
@@ -179,7 +180,7 @@ def main():
 				total_reward = 0
 				for i in xrange(10):
 					for step in xrange(STEP):
-						state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
+						state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value, True)
 						total_reward += reward
 						if done:
 							break
@@ -199,7 +200,7 @@ def main():
 			total_reward = 0
 			action_list = []
 			for step in xrange(STEP):
-				state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value)
+				state, action, next_state, reward, done, portfolio, portfolio_value = env_stage_data(agent, step, episode_data, portfolio, portfolio_value, False)
 				action_list.append(action)
 				portfolio_list.append(portfolio)
 				portfolio_value_list.append(portfolio_value)
@@ -215,9 +216,12 @@ def main():
 		test_rewards[iter] = [avg_reward]
 	print(test_rewards)
 
-def env_stage_data(agent, step, episode_data, portfolio, portfolio_value):
+def env_stage_data(agent, step, episode_data, portfolio, portfolio_value, train):
 	state = episode_data[step] + [portfolio]
-	action = agent.egreedy_action(state) # e-greedy action for train
+	if train:
+		action = agent.egreedy_action(state) # e-greedy action for train
+	else:
+		action = agent.action(state)
 	#print(step)
 	if step < STEP - 2:
 		new_state = episode_data[step+1] 
