@@ -162,7 +162,7 @@ def main():
 	for iter in xrange(ITERATION):
 		print(iter)
 		data = data_dictionary["x_train"]
-		for episode in xrange(0):
+		for episode in xrange(len(data)):
 			# initialize task
 			episode_data = data[episode]
 			portfolio = 0
