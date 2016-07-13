@@ -126,7 +126,7 @@ class DQN():
 		#print(self.time_step)
 		#print(self.epsilon)
 		if self.time_step > 200000:
-			self.epsilon -= (INITIAL_EPSILON - FINAL_EPSILON)/500000
+			self.epsilon -= (INITIAL_EPSILON - FINAL_EPSILON)/1000000
 		if random.random() <= self.epsilon:
 			return random.randint(0,self.action_dim - 1)
 		else:
@@ -150,7 +150,7 @@ class DQN():
 EPISODE = 10000 # Episode limitation
 STEP = 9 #Steps in an episode
 TEST = 10 # The number of experiment test every 100 episode
-ITERATION = 100
+ITERATION = 20
 
 def main():
 	# initialize OpenAI Gym env and dqn agent
@@ -162,7 +162,7 @@ def main():
 	for iter in xrange(ITERATION):
 		print(iter)
 		data = data_dictionary["x_train"]
-		for episode in xrange(len(data)):
+		for episode in xrange(0):
 			# initialize task
 			episode_data = data[episode]
 			portfolio = 0
@@ -207,14 +207,17 @@ def main():
 				reward_list.append(reward)
 				total_reward += reward
 				if done:
-					show_trader_path(action_list, episode_data, portfolio_list, portfolio_value_list, reward_list)
+					episode_reward = show_trader_path(action_list, episode_data, portfolio_list, portfolio_value_list, reward_list)
+					iteration_reward.append(episode_reward)
 					break
 			#print 'episode: ',episode,'Testing Average Reward:',total_reward
-			iteration_reward.append(portfolio_value)
 		avg_reward = sum(iteration_reward) / float(len(iteration_reward))
-		print(avg_reward)
-		test_rewards[iter] = [avg_reward]
-	print(test_rewards)
+		#print(avg_reward)
+		test_rewards[iter] = [iteration_reward, avg_reward]
+	for key, value in test_rewards.iteritems():
+		print(key)
+		print(value[1])
+		print(value[0])
 
 def env_stage_data(agent, step, episode_data, portfolio, portfolio_value, train):
 	state = episode_data[step] + [portfolio]
