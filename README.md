@@ -3,6 +3,8 @@ This project uses Reinforcement learning on stock market and agent tries to lear
 
 One Point to note, the code inside tensor-reinforcement is the latest code and you should be reading/running if you are interested in project. Leave other directories, I am not working on them for now<br>
 
+If you are working on ML on stocks investing/trading and wish to collaborate please feel free to email me deepender281190@gmail.com
+
 #Steps to reproduce DQN
 a) cd tensor-reinforcement <br>
 b) Copy data from https://drive.google.com/file/d/0B6ZrYxEMNGR-MEd5Ti0tTEJjMTQ/view into tensor-reinforcement directory and https://drive.google.com/file/d/0B6ZrYxEMNGR-Q0YwWWVpVnJ3YmM/view?usp=sharing.<br>
