@@ -5,3 +5,8 @@ b) The above idea actually helped and showed me that the way I have implemented 
 2) Make a second network which main task is just to select time when to execute trading action based on continous stream of time-price data trader is receving. This will be a good system to implement above deep_trader.
 I will first go with first now and mostly will implement 2 later above it. I think implementing both will be good idea.
 c) I also need to update standardization of data and reward system to use actual pricing rather than normalized price.
+d) Finally DQN algo is priting some result which I can obbserve, but its not something which I like. The average reward is coming negative on test data and if i ask algorithm to train itself for multiple iteration. It start just holiding I guess its not seeing a lot of positive reinforcement. There are few ideas which I have: 
+1) Making reward function so that terminal reward is only used.
+2) USE PG instead of DQN as its online learning which looks more applicable here.
+3) Change input data vector to have better understanding of markets at one time.
+I can't help but think how much a project teaches me, In my personal life I don't like uncertainity like as a human we love to live in loop of repeatedness with certainity. For example I will rush to asking girl I like very eealy whether she like me or not because living in limbo is not what my brain allows. But in project like this you are always in limbo unless you see the first ray of algo improving. I am waiting for that first singal here to kill anxiety. 
