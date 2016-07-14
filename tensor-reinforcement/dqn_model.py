@@ -215,9 +215,10 @@ def main():
 		#print(avg_reward)
 		test_rewards[iter] = [iteration_reward, avg_reward]
 	for key, value in test_rewards.iteritems():
+		print(value[0])
+	for key, value in test_rewards.iteritems():
 		print(key)
 		print(value[1])
-		print(value[0])
 
 def env_stage_data(agent, step, episode_data, portfolio, portfolio_value, train):
 	state = episode_data[step] + [portfolio]
