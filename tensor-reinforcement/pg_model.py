@@ -88,7 +88,6 @@ class PG():
         self.replay_buffer += temp
 
     def train_pg_network(self):
-        pdb.set_trace()
         minibatch = random.sample(self.replay_buffer,BATCH_SIZE*5)
         state_batch = [data[0] for data in minibatch]
         y_batch = [data[1] for data in minibatch]
@@ -106,7 +105,6 @@ class PG():
             self.saver.save(self.session, 'saved_networks/' + 'network' + '-pg', global_step = self.time_step)
 
     def policy_forward(self,state):
-        pdb.set_trace()
         prob = self.PG_value.eval(feed_dict = {self.state_input:[state]})[0]
         action = np.random.choice(self.action_dim, 1, p=prob)[0]
         y = np.zeros([self.action_dim])

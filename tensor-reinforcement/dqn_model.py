@@ -123,7 +123,6 @@ class DQN():
 		Q_value = self.Q_value.eval(feed_dict = {
 			self.state_input:[state]
 			})[0]
-		pdb.set_trace()
 		#print(self.time_step)
 		#print(self.epsilon)
 		if self.time_step > 200000:
