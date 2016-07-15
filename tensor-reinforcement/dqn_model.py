@@ -123,6 +123,7 @@ class DQN():
 		Q_value = self.Q_value.eval(feed_dict = {
 			self.state_input:[state]
 			})[0]
+		pdb.set_trace()
 		#print(self.time_step)
 		#print(self.epsilon)
 		if self.time_step > 200000:
@@ -150,7 +151,7 @@ class DQN():
 EPISODE = 10000 # Episode limitation
 STEP = 9 #Steps in an episode
 TEST = 10 # The number of experiment test every 100 episode
-ITERATION = 20
+ITERATION = 10
 
 def main():
 	# initialize OpenAI Gym env and dqn agent
@@ -211,7 +212,7 @@ def main():
 					iteration_reward.append(episode_reward)
 					break
 			#print 'episode: ',episode,'Testing Average Reward:',total_reward
-		avg_reward = sum(iteration_reward) / float(len(iteration_reward))
+		avg_reward = sum(iteration_reward) # / float(len(iteration_reward))
 		#print(avg_reward)
 		test_rewards[iter] = [iteration_reward, avg_reward]
 	for key, value in test_rewards.iteritems():

@@ -88,12 +88,13 @@ class PG():
         self.replay_buffer = []
 
         # save network every 1000 iteration
-        if self.time_step % 1000 == 0:
-            self.saver.save(self.session, 'pg_saved_networks/' + 'network' + '-pg', global_step = self.time_step)
+        #if self.time_step % 1000 == 0:
+            #self.saver.save(self.session, 'pg_saved_networks/' + 'network' + '-pg', global_step = self.time_step)
 
     def policy_forward(self,state):
         prob = self.PG_value.eval(feed_dict = {self.state_input:[state]})[0]
         action = np.random.choice(self.action_dim, 1, p=prob)[0]
+        print(action)
         y = np.zeros([self.action_dim])
         y[action] = 1
         return y, action
@@ -124,7 +125,7 @@ class PG():
 
 # ---------------------------------------------------------
 EPISODE = 10000 # Episode limitation
-STEP = 10 # Step limitation in an episode
+STEP = 9 # Step limitation in an episode
 TEST = 10 # The number of experiment test every 100 episode
 ITERATION = 20
 
@@ -157,7 +158,7 @@ def main():
                     discounted_epr /= np.std(discounted_epr)
                     epdlogp = np.vstack(grad_list)
                     agent.perceive(state_list, epdlogp)
-                    if episode % BATCH_SIZE == 0:
+                    if episode % BATCH_SIZE == 0 and episode > 1:
                         agent.train_pg_network()
                     break
             if episode % 100  == 0 and episode > 1:
@@ -165,11 +166,12 @@ def main():
                 for i in xrange(10):
                     for step in xrange(STEP):
                         state, action, next_state, reward, done, portfolio, portfolio_value, grad = env_stage_data(agent, step, episode_data, portfolio, portfolio_value, True)
+                        #pdb.set_trace();
                         total_reward += reward
                         if done:
                             break
                 ave_reward = total_reward/10
-                print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
+                print 'episode: ',episode,'Evaluation Average Reward:',total_reward
 
 
 def env_stage_data(agent, step, episode_data, portfolio, portfolio_value, train):
