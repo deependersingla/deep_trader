@@ -93,9 +93,16 @@ class PG():
 
     def policy_forward(self,state):
         prob = self.PG_value.eval(feed_dict = {self.state_input:[state]})[0]
-        action = np.random.choice(self.action_dim, 1, p=prob)[0]
-        print(action)
+        aprob = np.amax
+        #print(action)
+        if self.time_step > 200000:
+            self.epsilon -= (INITIAL_EPSILON - FINAL_EPSILON)/9000000
+        if random.random() <= self.epsilon:
+            action = np.random.choice(self.action_dim, 1)[0]
+        else:
+            action = np.random.choice(self.action_dim, 1, p=prob)[0]       
         y = np.zeros([self.action_dim])
+        self.time_step += 1
         y[action] = 1
         return y, action
 
@@ -127,7 +134,7 @@ class PG():
 EPISODE = 10000 # Episode limitation
 STEP = 9 # Step limitation in an episode
 TEST = 10 # The number of experiment test every 100 episode
-ITERATION = 20
+ITERATION = 10
 
 def main():
     # initialize OpenAI Gym env and dqn agent
@@ -171,7 +178,39 @@ def main():
                         if done:
                             break
                 ave_reward = total_reward/10
-                print 'episode: ',episode,'Evaluation Average Reward:',total_reward
+                print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
+        #on test data
+        data = data_dictionary["x_test"]
+        iteration_reward = []
+        for episode in xrange(len(data)):
+            episode_data = data[episode]
+            portfolio = 0
+            portfolio_list = []
+            portfolio_value = 0
+            portfolio_value_list = []
+            reward_list = []
+            total_reward = 0
+            action_list = []
+            for step in xrange(STEP):
+                state, action, next_state, reward, done, portfolio, portfolio_value, grad = env_stage_data(agent, step, episode_data, portfolio, portfolio_value, False)
+                action_list.append(action)
+                portfolio_list.append(portfolio)
+                portfolio_value_list.append(portfolio_value)
+                reward_list.append(reward)
+                total_reward += reward
+                if done:
+                    episode_reward = show_trader_path(action_list, episode_data, portfolio_list, portfolio_value_list, reward_list)
+                    iteration_reward.append(episode_reward)
+                    break
+            #print 'episode: ',episode,'Testing Average Reward:',total_reward
+        avg_reward = sum(iteration_reward) # / float(len(iteration_reward))
+        #print(avg_reward)
+        test_rewards[iter] = [iteration_reward, avg_reward]
+    for key, value in test_rewards.iteritems():
+        print(value[0])
+    for key, value in test_rewards.iteritems():
+        print(key)
+        print(value[1])
 
 
 def env_stage_data(agent, step, episode_data, portfolio, portfolio_value, train):
