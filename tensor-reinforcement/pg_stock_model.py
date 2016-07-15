@@ -88,8 +88,8 @@ class PG():
         self.replay_buffer = []
 
         # save network every 1000 iteration
-        #if self.time_step % 1000 == 0:
-            #self.saver.save(self.session, 'pg_saved_networks/' + 'network' + '-pg', global_step = self.time_step)
+        if self.time_step % 10000 == 0:
+            self.saver.save(self.session, 'pg_saved_networks/' + 'network' + '-pg', global_step = self.time_step)
 
     def policy_forward(self,state):
         prob = self.PG_value.eval(feed_dict = {self.state_input:[state]})[0]
