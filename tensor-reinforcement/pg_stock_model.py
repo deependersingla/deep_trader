@@ -95,7 +95,7 @@ class PG():
         prob = self.PG_value.eval(feed_dict = {self.state_input:[state]})[0]
         aprob = np.amax
         #print(action)
-        if self.time_step > 200000:
+        if self.time_step > 20000000:
             self.epsilon -= (INITIAL_EPSILON - FINAL_EPSILON)/9000000
         if random.random() <= self.epsilon:
             action = np.random.choice(self.action_dim, 1)[0]
