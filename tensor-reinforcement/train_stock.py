@@ -18,10 +18,10 @@ import six
 import episodic_data
 from six.moves.urllib import request
 
-data = episodic_data.load_data("data.pkl",episode=10)
+data = episodic_data.load_data("data_1.pkl",episode=10)
 data_dict = episodic_data.load_file_data("data_dict.pkl")
-supervised_data  = episodic_data.make_supervised_data(data, data_dict)
-x_train, x_test = train_test_split(data, test_size=0.10, random_state=123)
+supervised_y_data  = episodic_data.make_supervised_data(data, data_dict)
+x_train, x_test, y_train, y_test = train_test_split(data, supervised_y_data, test_size=0.10, random_state=123)
 action_map = {0: "Hold", 1: "Buy", 2: "Sell"}
 #calling data_dict is data_dict[episodic_data.list_md5_string_value(list)]
 
@@ -33,6 +33,8 @@ def get_intial_data():
     data_dictionary["hidden_layer_2_size"] = 20 #will be using later
     data_dictionary["x_train"] = x_train
     data_dictionary["x_test"] = x_test
+    data_dictionary["y_test"] = y_test
+    data_dictionary["y_train"] = y_train
     return data_dictionary
 
 
@@ -41,7 +43,7 @@ def new_stage_data(action, portfolio, old_state, new_state, portfolio_value, don
     #low_price = new_state[2]
     #changing code to use average price rather than normalized price
     price = episodic_data.data_average_price(data_dict, episode_data)
-    next_price = episode_data.data_average_price(data_dict, new_state)
+    next_price = episodic_data.data_average_price(data_dict, new_state)
     #price = data_dict[episodic_data.list_md5_string_value(episode_data)][-1]
     #next_price = data_dict[episodic_data.list_md5_string_value(new_state)][-1]
     #buying

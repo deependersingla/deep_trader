@@ -84,7 +84,8 @@ def episode_supervised_data(data, data_dict):
 	prices = []
 	for iteration in data:
 		prices.append(data_average_price(data_dict, iteration))
-	generate_actions_from_price_data(prices)
+	actions = generate_actions_from_price_data(prices)
+	return actions
 
 def data_average_price(data_dict, data):
 	data =  data_dict[list_md5_string_value(data)]
@@ -95,4 +96,5 @@ def make_supervised_data(data, data_dict):
 	supervised_data = []
 	for episode in data:
 		supervised_data.append(episode_supervised_data(episode, data_dict))
+	return supervised_data
 #prepare_data()

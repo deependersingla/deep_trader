@@ -2,5 +2,5 @@ import numpy as np
 import pdb
 
 def generate_actions_from_price_data(prices):
-	pdb.set_trace()
-	print("f")
+    #return random and portfolio
+	return [[1,0],[1,0],[1,0],[1,0],[1,0],[1,0],[1,0],[1,0],[1,0],[1,0]]

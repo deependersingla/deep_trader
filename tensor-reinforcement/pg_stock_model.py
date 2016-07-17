@@ -31,6 +31,7 @@ class PG():
         self.y_input = tf.placeholder("float",[None, self.action_dim])
         self.create_pg_network(data_dictionary)
         self.create_training_method()
+        self.create_supervised_accuracy()
 
         # Init session
         self.session = tf.InteractiveSession()
@@ -68,6 +69,10 @@ class PG():
         merged_summary_op = tf.merge_all_summaries()
         self.optimizer = tf.train.AdamOptimizer(LEARNING_RATE).minimize(self.cost)
 
+    def create_supervised_accuracy(self):
+        correct_prediction = tf.equal(tf.argmax(self.PG_value,1), tf.argmax(self.y_input,1))
+        self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
     def perceive(self,states,epd):
         temp = []
         for index, value in enumerate(states):
@@ -90,7 +95,13 @@ class PG():
         # save network every 1000 iteration
         if self.time_step % 10000 == 0:
             self.saver.save(self.session, 'pg_saved_networks/' + 'network' + '-pg', global_step = self.time_step)
+    
+    def train_supervised(self, state_batch, y_batch):
+        self.optimizer.run(feed_dict={self.y_input:y_batch,self.state_input:state_batch})
 
+    def supervised_accuracy(self, state_batch, y_batch):
+        print(self.accuracy.eval(feed_dict={self.y_input:y_batch,self.state_input:state_batch})*100)
+    
     def policy_forward(self,state):
         prob = self.PG_value.eval(feed_dict = {self.state_input:[state]})[0]
         aprob = np.amax
@@ -134,7 +145,7 @@ class PG():
 EPISODE = 10000 # Episode limitation
 STEP = 9 # Step limitation in an episode
 TEST = 10 # The number of experiment test every 100 episode
-ITERATION = 10
+ITERATION = 1
 
 def main():
     # initialize OpenAI Gym env and dqn agent
@@ -143,7 +154,10 @@ def main():
     agent = PG(data_dictionary)
     test_rewards = {}
 
-    for iter in xrange(ITERATION):
+    #supervised learning first
+    supervised_seeding(agent, data_dictionary)
+
+    for iter in xrange(0):
         print(iter)
         # initialize tase
         # Train 
@@ -211,6 +225,44 @@ def main():
     for key, value in test_rewards.iteritems():
         print(key)
         print(value[1])
+
+
+def supervised_seeding(agent, data_dictionary):
+    for iter in xrange(ITERATION):
+        #print(iter)
+        data = data_dictionary["x_train"]
+        y_label_data = data_dictionary["y_train"]
+        for episode in xrange(len(data)):
+            state_batch, y_batch = make_supervised_input_vector(episode, data, y_label_data)
+            agent.train_supervised(state_batch, y_batch)
+
+        test_data = data_dictionary["x_test"]
+        y_label_data = data_dictionary["y_test"]
+        for episode in xrange(len(data)):
+            state_batch, y_batch = make_supervised_input_vector(episode, data, y_label_data)
+            agent.supervised_accuracy(state_batch, y_batch)
+
+
+
+
+def make_supervised_input_vector(episode, data, y_label_data):
+    x_data = data[episode]
+    y_data = data[episode]
+    state_batch = []
+    y_batch = []
+    for index, item in enumerate(x_data):
+        temp = item + [y_data[index][1]]
+        state_batch.append(temp)
+        y = np.zeros([3])
+        y[y_data[index][0]] = 1
+        y_batch.append(y)
+    return state_batch, y_batch
+
+
+
+
+
+
 
 
 def env_stage_data(agent, step, episode_data, portfolio, portfolio_value, train):
