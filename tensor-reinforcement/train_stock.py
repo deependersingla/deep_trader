@@ -18,7 +18,7 @@ import six
 import episodic_data
 from six.moves.urllib import request
 
-data = episodic_data.load_data("data_1.pkl",episode=10)
+data = episodic_data.load_data("data.pkl",episode=10)
 data_dict = episodic_data.load_file_data("data_dict.pkl")
 supervised_y_data  = episodic_data.make_supervised_data(data, data_dict)
 x_train, x_test, y_train, y_test = train_test_split(data, supervised_y_data, test_size=0.10, random_state=123)

@@ -100,7 +100,7 @@ class PG():
         self.optimizer.run(feed_dict={self.y_input:y_batch,self.state_input:state_batch})
 
     def supervised_accuracy(self, state_batch, y_batch):
-        print(self.accuracy.eval(feed_dict={self.y_input:y_batch,self.state_input:state_batch})*100)
+        return self.accuracy.eval(feed_dict={self.y_input:y_batch,self.state_input:state_batch})*100
     
     def policy_forward(self,state):
         prob = self.PG_value.eval(feed_dict = {self.state_input:[state]})[0]
@@ -145,7 +145,7 @@ class PG():
 EPISODE = 10000 # Episode limitation
 STEP = 9 # Step limitation in an episode
 TEST = 10 # The number of experiment test every 100 episode
-ITERATION = 1
+ITERATION = 10
 
 def main():
     # initialize OpenAI Gym env and dqn agent
@@ -230,6 +230,7 @@ def main():
 def supervised_seeding(agent, data_dictionary):
     for iter in xrange(ITERATION):
         #print(iter)
+        iteration_accuracy = []
         data = data_dictionary["x_train"]
         y_label_data = data_dictionary["y_train"]
         for episode in xrange(len(data)):
@@ -240,7 +241,10 @@ def supervised_seeding(agent, data_dictionary):
         y_label_data = data_dictionary["y_test"]
         for episode in xrange(len(data)):
             state_batch, y_batch = make_supervised_input_vector(episode, data, y_label_data)
-            agent.supervised_accuracy(state_batch, y_batch)
+            accuracy = agent.supervised_accuracy(state_batch, y_batch)
+            iteration_accuracy.append(accuracy)
+        avg_accuracy = sum(iteration_accuracy) / float(len(iteration_accuracy))
+        print(avg_accuracy)
 
 
 
