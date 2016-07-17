@@ -18,6 +18,7 @@ import six
 from six.moves.urllib import request
 import hashlib
 import json
+from supervised_helper import generate_actions_from_price_data
 
 
 episode = 10 #lenght of one episode
@@ -79,4 +80,19 @@ def list_md5_string_value(list):
 	string = json.dumps(list)
 	return hashlib.md5(string).hexdigest()
 
+def episode_supervised_data(data, data_dict):
+	prices = []
+	for iteration in data:
+		prices.append(data_average_price(data_dict, iteration))
+	generate_actions_from_price_data(prices)
+
+def data_average_price(data_dict, data):
+	data =  data_dict[list_md5_string_value(data)]
+	return data[-1]
+
+
+def make_supervised_data(data, data_dict):
+	supervised_data = []
+	for episode in data:
+		supervised_data.append(episode_supervised_data(episode, data_dict))
 #prepare_data()
