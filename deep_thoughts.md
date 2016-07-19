@@ -41,4 +41,4 @@ The good news is that dqn_model is showing signs of improvement. When I run dqn_
 I am trying PGN model now on the stocks. The major problem here is that the random algorithm is not getting positive rewards a lot of the time in the beginning. This causes the algo to hold everything, because this means zero reward (rather than take a negative reward). I have few idea to solve this:
 
 1. Change algo to take a lot of random actions for a long time at training.
-2. Find out which action lead to positive reinforcement in test data and train first a supervised network based on that. Use the network here then to train RL network.
+2. Find out which action lead to positive reinforcement in test data and train first a supervised network based on that. Use the network here then to train RL network.  I have started this on development branch of project.
