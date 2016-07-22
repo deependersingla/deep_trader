@@ -9,6 +9,7 @@ import random
 from collections import deque
 import pdb 
 from train_stock import *
+import sys
 
 # Hyper Parameters for PG
 GAMMA = 0.9 # discount factor for target Q 
@@ -235,11 +236,13 @@ def supervised_seeding(agent, data_dictionary):
         y_label_data = data_dictionary["y_train"]
         for episode in xrange(len(data)):
             state_batch, y_batch = make_supervised_input_vector(episode, data, y_label_data)
+            print(episode)
             agent.train_supervised(state_batch, y_batch)
 
-        test_data = data_dictionary["x_test"]
+        data = data_dictionary["x_test"]
         y_label_data = data_dictionary["y_test"]
-        for episode in xrange(len(test_data)):
+        for episode in xrange(len(data)):
+            #pdb.set_trace();
             state_batch, y_batch = make_supervised_input_vector(episode, data, y_label_data)
             accuracy = agent.supervised_accuracy(state_batch, y_batch)
             iteration_accuracy.append(accuracy)
@@ -255,7 +258,10 @@ def make_supervised_input_vector(episode, data, y_label_data):
     state_batch = []
     y_batch = []
     for index, item in enumerate(x_data[0:-1]):
-        temp = item + [y_data[index][1]]
+        try:
+            temp = item + [y_data[index][1]]
+        except:
+            pdb.set_trace()
         state_batch.append(temp)
         y = np.zeros([3])
         y[y_data[index][0]] = 1

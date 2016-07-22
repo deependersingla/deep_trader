@@ -94,7 +94,12 @@ def data_average_price(data_dict, data):
 
 def make_supervised_data(data, data_dict):
 	supervised_data = []
-	for episode in data:
-		supervised_data.append(episode_supervised_data(episode, data_dict))
+	if not os.path.exists('supervised_data.pkl'):
+		for episode in data:
+			supervised_data.append(episode_supervised_data(episode, data_dict))
+		with open("supervised_data.pkl", "wb") as myFile:
+			six.moves.cPickle.dump(supervised_data, myFile, -1)
+	with open('supervised_data.pkl', 'rb') as myFile:
+		supervised_data = six.moves.cPickle.load(myFile)
 	return supervised_data
 #prepare_data()

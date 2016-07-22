@@ -8,7 +8,7 @@ def generate_actions_from_price_data(prices):
         #the below method can also be replaces with algorithms which generates action non-iteravely but 
         #i am too lazy to do that and got lot of computation power
         profit, result_list = find_profit_from_given_action(prices, action_list)
-        if profit > old_profit:
+        if profit >= old_profit:
             old_profit = profit
             golden_actions = result_list
     print(golden_actions)
