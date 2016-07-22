@@ -232,12 +232,18 @@ def supervised_seeding(agent, data_dictionary):
     for iter in xrange(ITERATION):
         #print(iter)
         iteration_accuracy = []
+        train_iteration_accuracy = []
         data = data_dictionary["x_train"]
         y_label_data = data_dictionary["y_train"]
         for episode in xrange(len(data)):
             state_batch, y_batch = make_supervised_input_vector(episode, data, y_label_data)
-            print(episode)
+            #print(episode)
             agent.train_supervised(state_batch, y_batch)
+            accuracy = agent.supervised_accuracy(state_batch, y_batch)
+            train_iteration_accuracy.append(accuracy)
+        avg_accuracy = sum(train_iteration_accuracy)/ float(len(train_iteration_accuracy))
+        print("Train Average accuracy")
+        print(avg_accuracy)
 
         data = data_dictionary["x_test"]
         y_label_data = data_dictionary["y_test"]
@@ -247,6 +253,7 @@ def supervised_seeding(agent, data_dictionary):
             accuracy = agent.supervised_accuracy(state_batch, y_batch)
             iteration_accuracy.append(accuracy)
         avg_accuracy = sum(iteration_accuracy) / float(len(iteration_accuracy))
+        print("Test Average accuracy")
         print(avg_accuracy)
 
 
