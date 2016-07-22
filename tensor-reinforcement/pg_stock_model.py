@@ -239,7 +239,7 @@ def supervised_seeding(agent, data_dictionary):
 
         test_data = data_dictionary["x_test"]
         y_label_data = data_dictionary["y_test"]
-        for episode in xrange(len(data)):
+        for episode in xrange(len(test_data)):
             state_batch, y_batch = make_supervised_input_vector(episode, data, y_label_data)
             accuracy = agent.supervised_accuracy(state_batch, y_batch)
             iteration_accuracy.append(accuracy)
@@ -251,10 +251,10 @@ def supervised_seeding(agent, data_dictionary):
 
 def make_supervised_input_vector(episode, data, y_label_data):
     x_data = data[episode]
-    y_data = data[episode]
+    y_data = y_label_data[episode]
     state_batch = []
     y_batch = []
-    for index, item in enumerate(x_data):
+    for index, item in enumerate(x_data[0:-1]):
         temp = item + [y_data[index][1]]
         state_batch.append(temp)
         y = np.zeros([3])
