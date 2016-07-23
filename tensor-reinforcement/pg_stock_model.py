@@ -9,6 +9,7 @@ import random
 from collections import deque
 import pdb 
 from train_stock import *
+import sys
 
 # Hyper Parameters for PG
 GAMMA = 0.9 # discount factor for target Q 
@@ -31,6 +32,7 @@ class PG():
         self.y_input = tf.placeholder("float",[None, self.action_dim])
         self.create_pg_network(data_dictionary)
         self.create_training_method()
+        self.create_supervised_accuracy()
 
         # Init session
         self.session = tf.InteractiveSession()
@@ -50,23 +52,33 @@ class PG():
 
     def create_pg_network(self, data_dictionary):
         # network weights
-        W1 = self.weight_variable([self.state_dim,data_dictionary["hidden_layer_1_size"]])
+        W0 = self.weight_variable([self.state_dim,80])
+        b0 = self.bias_variable([80])
+        W1 = self.weight_variable([80,data_dictionary["hidden_layer_1_size"]])
         b1 = self.bias_variable([data_dictionary["hidden_layer_1_size"]])
-        W2 = self.weight_variable([data_dictionary["hidden_layer_1_size"],self.action_dim])
-        b2 = self.bias_variable([self.action_dim])
-        h_layer = tf.nn.relu(tf.matmul(self.state_input,W1) + b1)
-        self.PG_value = tf.nn.softmax(tf.matmul(h_layer,W2) + b2)
+        W2 = self.weight_variable([data_dictionary["hidden_layer_1_size"],data_dictionary["hidden_layer_2_size"]])
+        b2 = self.bias_variable([data_dictionary["hidden_layer_2_size"]])
+        W3 = self.weight_variable([data_dictionary["hidden_layer_2_size"],self.action_dim])
+        b3 = self.bias_variable([self.action_dim])
+        h_1_layer = tf.nn.relu(tf.matmul(self.state_input,W0) + b0)
+        h_2_layer = tf.nn.relu(tf.matmul(h_1_layer,W1) + b1)
+        h_layer = tf.nn.relu(tf.matmul(h_2_layer,W2) + b2)
+        self.PG_value = tf.nn.softmax(tf.matmul(h_layer,W3) + b3)
         
     def create_training_method(self):
         #this needs to be updated to use softmax
         #P_action = tf.reduce_sum(self.PG_value,reduction_indices = 1)
         #self.cost = tf.reduce_mean(tf.square(self.y_input - P_action))
-        #self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(self.PG_value, self.y_input))
-        self.cost = tf.reduce_mean(-tf.reduce_sum(self.y_input * tf.log(self.PG_value), reduction_indices=[1]))
+        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(self.PG_value, self.y_input))
+        #self.cost = tf.reduce_mean(-tf.reduce_sum(self.y_input * tf.log(self.PG_value), reduction_indices=[1]))
         tf.scalar_summary("loss",self.cost)
         global merged_summary_op
         merged_summary_op = tf.merge_all_summaries()
         self.optimizer = tf.train.AdamOptimizer(LEARNING_RATE).minimize(self.cost)
+
+    def create_supervised_accuracy(self):
+        correct_prediction = tf.equal(tf.argmax(self.PG_value,1), tf.argmax(self.y_input,1))
+        self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     def perceive(self,states,epd):
         temp = []
@@ -88,16 +100,26 @@ class PG():
         self.replay_buffer = []
 
         # save network every 1000 iteration
-        if self.time_step % 10000 == 0:
+        if self.time_step % 100000 == 0:
+            self.saver.save(self.session, 'pg_saved_networks/' + 'network' + '-pg', global_step = self.time_step)
+    
+    def train_supervised(self, state_batch, y_batch):
+        #pdb.set_trace()
+        self.optimizer.run(feed_dict={self.y_input:y_batch,self.state_input:state_batch})
+        self.time_step += 1
+        if self.time_step % 1000 == 0:
             self.saver.save(self.session, 'pg_saved_networks/' + 'network' + '-pg', global_step = self.time_step)
 
+    def supervised_accuracy(self, state_batch, y_batch):
+        return self.accuracy.eval(feed_dict={self.y_input:y_batch,self.state_input:state_batch})*100
+    
     def policy_forward(self,state):
         prob = self.PG_value.eval(feed_dict = {self.state_input:[state]})[0]
         aprob = np.amax
         #print(action)
         if self.time_step > 20000000:
             self.epsilon -= (INITIAL_EPSILON - FINAL_EPSILON)/9000000
-        if random.random() <= self.epsilon:
+        if random.random() <= 0:
             action = np.random.choice(self.action_dim, 1)[0]
         else:
             action = np.random.choice(self.action_dim, 1, p=prob)[0]       
@@ -134,7 +156,7 @@ class PG():
 EPISODE = 10000 # Episode limitation
 STEP = 9 # Step limitation in an episode
 TEST = 10 # The number of experiment test every 100 episode
-ITERATION = 10
+ITERATION = 200
 
 def main():
     # initialize OpenAI Gym env and dqn agent
@@ -142,6 +164,9 @@ def main():
     data_dictionary = get_intial_data()
     agent = PG(data_dictionary)
     test_rewards = {}
+
+    #supervised learning first
+    #supervised_seeding(agent, data_dictionary)
 
     for iter in xrange(ITERATION):
         print(iter)
@@ -178,7 +203,7 @@ def main():
                         if done:
                             break
                 ave_reward = total_reward/10
-                print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
+                #print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
         #on test data
         data = data_dictionary["x_test"]
         iteration_reward = []
@@ -204,13 +229,68 @@ def main():
                     break
             #print 'episode: ',episode,'Testing Average Reward:',total_reward
         avg_reward = sum(iteration_reward) # / float(len(iteration_reward))
-        #print(avg_reward)
+        print(avg_reward)
         test_rewards[iter] = [iteration_reward, avg_reward]
     for key, value in test_rewards.iteritems():
         print(value[0])
     for key, value in test_rewards.iteritems():
         print(key)
         print(value[1])
+
+
+def supervised_seeding(agent, data_dictionary):
+    for iter in xrange(ITERATION):
+        print("Iteration:")
+        print(iter)
+        iteration_accuracy = []
+        train_iteration_accuracy = []
+        data = data_dictionary["x_train"]
+        y_label_data = data_dictionary["y_train"]
+        for episode in xrange(len(data)):
+            state_batch, y_batch = make_supervised_input_vector(episode, data, y_label_data)
+            #print(episode)
+            agent.train_supervised(state_batch, y_batch)
+            accuracy = agent.supervised_accuracy(state_batch, y_batch)
+            train_iteration_accuracy.append(accuracy)
+        avg_accuracy = sum(train_iteration_accuracy)/ float(len(train_iteration_accuracy))
+        print("Train Average accuracy")
+        print(avg_accuracy)
+
+        data = data_dictionary["x_test"]
+        y_label_data = data_dictionary["y_test"]
+        for episode in xrange(len(data)):
+            #pdb.set_trace();
+            state_batch, y_batch = make_supervised_input_vector(episode, data, y_label_data)
+            accuracy = agent.supervised_accuracy(state_batch, y_batch)
+            iteration_accuracy.append(accuracy)
+        avg_accuracy = sum(iteration_accuracy) / float(len(iteration_accuracy))
+        print("Test Average accuracy")
+        print(avg_accuracy)
+
+
+
+
+def make_supervised_input_vector(episode, data, y_label_data):
+    x_data = data[episode]
+    y_data = y_label_data[episode]
+    state_batch = []
+    y_batch = []
+    for index, item in enumerate(x_data[0:-1]):
+        try:
+            temp = item + [y_data[index][1]]
+        except:
+            pdb.set_trace()
+        state_batch.append(temp)
+        y = np.zeros([3])
+        y[y_data[index][0]] = 1
+        y_batch.append(y)
+    return state_batch, y_batch
+
+
+
+
+
+
 
 
 def env_stage_data(agent, step, episode_data, portfolio, portfolio_value, train):
