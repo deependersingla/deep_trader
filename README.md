@@ -3,6 +3,8 @@ This project uses Reinforcement learning on stock market and agent tries to lear
 
 One Point to note, the code inside tensor-reinforcement is the latest code and you should be reading/running if you are interested in project. Leave other directories, I am not working on them for now<br>. To read my thought journal during ongoing development https://github.com/deependersingla/deep_trader/blob/master/deep_thoughts.md <br>
 
+Before this I have used RL here: http://somedeepthoughtsblog.tumblr.com/post/134793589864/maths-versus-computation
+
 If you are working on ML on stocks investing/trading and wish to collaborate please feel free to email me deepender281190@gmail.com
 
 #Steps to reproduce DQN
