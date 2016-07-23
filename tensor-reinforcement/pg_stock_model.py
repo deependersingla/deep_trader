@@ -156,7 +156,7 @@ class PG():
 EPISODE = 10000 # Episode limitation
 STEP = 9 # Step limitation in an episode
 TEST = 10 # The number of experiment test every 100 episode
-ITERATION = 200
+ITERATION = 20
 
 def main():
     # initialize OpenAI Gym env and dqn agent
@@ -166,7 +166,7 @@ def main():
     test_rewards = {}
 
     #supervised learning first
-    #supervised_seeding(agent, data_dictionary)
+    supervised_seeding(agent, data_dictionary)
 
     for iter in xrange(ITERATION):
         print(iter)
