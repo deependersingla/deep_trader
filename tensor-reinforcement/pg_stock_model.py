@@ -203,7 +203,7 @@ def main():
                         if done:
                             break
                 ave_reward = total_reward/10
-                print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
+                #print 'episode: ',episode,'Evaluation Average Reward:',ave_reward
         #on test data
         data = data_dictionary["x_test"]
         iteration_reward = []
@@ -229,7 +229,7 @@ def main():
                     break
             #print 'episode: ',episode,'Testing Average Reward:',total_reward
         avg_reward = sum(iteration_reward) # / float(len(iteration_reward))
-        #print(avg_reward)
+        print(avg_reward)
         test_rewards[iter] = [iteration_reward, avg_reward]
     for key, value in test_rewards.iteritems():
         print(value[0])
