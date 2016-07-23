@@ -52,19 +52,25 @@ class PG():
 
     def create_pg_network(self, data_dictionary):
         # network weights
-        W1 = self.weight_variable([self.state_dim,data_dictionary["hidden_layer_1_size"]])
+        W0 = self.weight_variable([self.state_dim,80])
+        b0 = self.bias_variable([80])
+        W1 = self.weight_variable([80,data_dictionary["hidden_layer_1_size"]])
         b1 = self.bias_variable([data_dictionary["hidden_layer_1_size"]])
-        W2 = self.weight_variable([data_dictionary["hidden_layer_1_size"],self.action_dim])
-        b2 = self.bias_variable([self.action_dim])
-        h_layer = tf.nn.relu(tf.matmul(self.state_input,W1) + b1)
-        self.PG_value = tf.nn.softmax(tf.matmul(h_layer,W2) + b2)
+        W2 = self.weight_variable([data_dictionary["hidden_layer_1_size"],data_dictionary["hidden_layer_2_size"]])
+        b2 = self.bias_variable([data_dictionary["hidden_layer_2_size"]])
+        W3 = self.weight_variable([data_dictionary["hidden_layer_2_size"],self.action_dim])
+        b3 = self.bias_variable([self.action_dim])
+        h_1_layer = tf.nn.relu(tf.matmul(self.state_input,W0) + b0)
+        h_2_layer = tf.nn.relu(tf.matmul(h_1_layer,W1) + b1)
+        h_layer = tf.nn.relu(tf.matmul(h_2_layer,W2) + b2)
+        self.PG_value = tf.nn.softmax(tf.matmul(h_layer,W3) + b3)
         
     def create_training_method(self):
         #this needs to be updated to use softmax
         #P_action = tf.reduce_sum(self.PG_value,reduction_indices = 1)
         #self.cost = tf.reduce_mean(tf.square(self.y_input - P_action))
-        #self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(self.PG_value, self.y_input))
-        self.cost = tf.reduce_mean(-tf.reduce_sum(self.y_input * tf.log(self.PG_value), reduction_indices=[1]))
+        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(self.PG_value, self.y_input))
+        #self.cost = tf.reduce_mean(-tf.reduce_sum(self.y_input * tf.log(self.PG_value), reduction_indices=[1]))
         tf.scalar_summary("loss",self.cost)
         global merged_summary_op
         merged_summary_op = tf.merge_all_summaries()
@@ -94,11 +100,15 @@ class PG():
         self.replay_buffer = []
 
         # save network every 1000 iteration
-        if self.time_step % 10000 == 0:
+        if self.time_step % 100000 == 0:
             self.saver.save(self.session, 'pg_saved_networks/' + 'network' + '-pg', global_step = self.time_step)
     
     def train_supervised(self, state_batch, y_batch):
+        #pdb.set_trace()
         self.optimizer.run(feed_dict={self.y_input:y_batch,self.state_input:state_batch})
+        self.time_step += 1
+        if self.time_step % 1000 == 0:
+            self.saver.save(self.session, 'pg_saved_networks/' + 'network' + '-pg', global_step = self.time_step)
 
     def supervised_accuracy(self, state_batch, y_batch):
         return self.accuracy.eval(feed_dict={self.y_input:y_batch,self.state_input:state_batch})*100
@@ -109,7 +119,7 @@ class PG():
         #print(action)
         if self.time_step > 20000000:
             self.epsilon -= (INITIAL_EPSILON - FINAL_EPSILON)/9000000
-        if random.random() <= self.epsilon:
+        if random.random() <= 0:
             action = np.random.choice(self.action_dim, 1)[0]
         else:
             action = np.random.choice(self.action_dim, 1, p=prob)[0]       
@@ -146,7 +156,7 @@ class PG():
 EPISODE = 10000 # Episode limitation
 STEP = 9 # Step limitation in an episode
 TEST = 10 # The number of experiment test every 100 episode
-ITERATION = 10
+ITERATION = 200
 
 def main():
     # initialize OpenAI Gym env and dqn agent
@@ -156,9 +166,9 @@ def main():
     test_rewards = {}
 
     #supervised learning first
-    supervised_seeding(agent, data_dictionary)
+    #supervised_seeding(agent, data_dictionary)
 
-    for iter in xrange(0):
+    for iter in xrange(ITERATION):
         print(iter)
         # initialize tase
         # Train 
@@ -230,7 +240,8 @@ def main():
 
 def supervised_seeding(agent, data_dictionary):
     for iter in xrange(ITERATION):
-        #print(iter)
+        print("Iteration:")
+        print(iter)
         iteration_accuracy = []
         train_iteration_accuracy = []
         data = data_dictionary["x_train"]
