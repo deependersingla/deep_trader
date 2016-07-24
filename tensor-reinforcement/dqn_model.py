@@ -9,6 +9,7 @@ import random
 from collections import deque
 import pdb 
 from train_stock import *
+from tensorboard_helper import *
 
 # Hyper Parameters for DQN
 GAMMA = 0.9 # discount factor for target Q 
@@ -51,9 +52,15 @@ class DQN():
 	def create_Q_network(self, data_dictionary):
 		# network weights
 		W1 = self.weight_variable([self.state_dim,data_dictionary["hidden_layer_1_size"]])
+		variable_summaries(W1, "layer1/weights")
 		b1 = self.bias_variable([data_dictionary["hidden_layer_1_size"]])
+		variable_summaries(b1, "layer1/bias")
 		W2 = self.weight_variable([data_dictionary["hidden_layer_1_size"],self.action_dim])
+		variable_summaries(W2, "layer2/weights")
 		b2 = self.bias_variable([self.action_dim])
+		variable_summaries(b2, "layer2/bias")
+		#tf.scalar_summary("second_layer_bias_scaler", b2)
+		self.b2 = b2
 		# input layer
 		self.state_input = tf.placeholder("float",[None,self.state_dim])
 		# hidden layers
@@ -114,6 +121,7 @@ class DQN():
 				self.state_input : state_batch
 				})
 		summary_writer.add_summary(summary_str,self.time_step)
+		#pdb.set_trace()
 
 		# save network every 1000 iteration
 		if self.time_step % 1000 == 0:
@@ -150,7 +158,7 @@ class DQN():
 EPISODE = 10000 # Episode limitation
 STEP = 9 #Steps in an episode
 TEST = 10 # The number of experiment test every 100 episode
-ITERATION = 10
+ITERATION = 20
 
 def main():
 	# initialize OpenAI Gym env and dqn agent
