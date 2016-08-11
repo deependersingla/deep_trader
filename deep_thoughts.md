@@ -1,3 +1,5 @@
+
+
 #Description
 
 The purpose of this file is to keep track of why I am making changes, since I am working alone on this project. This file is also a journal for me to brain storm. 
@@ -47,3 +49,6 @@ I am trying PGN model now on the stocks. The major problem here is that the rand
 ###PG Improving:
 
 The idea to use use supervised network first actually worked and now PG is also generating profit on the test data. The model is not just holding stocks its improving also.
+
+### Checking profitablity:
+I have checked different stock brokerage transaction cost in India. The minimum one can go is to pay just STT for brokerage tax which is 0.025% on an intra-day transaction. The rate is 0.017% on all Futures and Options transactions. Now, based on model, I have to write code to check what is the ow much friction costs can the strategy win past. Also, there is one other idea also of separating test data into 4 datas and checking different average profit in 4.

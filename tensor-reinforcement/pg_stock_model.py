@@ -10,6 +10,7 @@ from collections import deque
 import pdb 
 from train_stock import *
 import sys
+from tensorboard_helper import *
 
 # Hyper Parameters for PG
 GAMMA = 0.9 # discount factor for target Q 
@@ -60,6 +61,7 @@ class PG():
         b2 = self.bias_variable([data_dictionary["hidden_layer_2_size"]])
         W3 = self.weight_variable([data_dictionary["hidden_layer_2_size"],self.action_dim])
         b3 = self.bias_variable([self.action_dim])
+        variable_summaries(b3, "layer2/bias")
         h_1_layer = tf.nn.relu(tf.matmul(self.state_input,W0) + b0)
         h_2_layer = tf.nn.relu(tf.matmul(h_1_layer,W1) + b1)
         h_layer = tf.nn.relu(tf.matmul(h_2_layer,W2) + b2)
@@ -107,6 +109,11 @@ class PG():
         #pdb.set_trace()
         self.optimizer.run(feed_dict={self.y_input:y_batch,self.state_input:state_batch})
         self.time_step += 1
+        summary_str = self.session.run(merged_summary_op,feed_dict={
+            self.y_input:y_batch,
+            self.state_input:state_batch
+            })
+        summary_writer.add_summary(summary_str,self.time_step)
         if self.time_step % 1000 == 0:
             self.saver.save(self.session, 'pg_saved_networks/' + 'network' + '-pg', global_step = self.time_step)
 
