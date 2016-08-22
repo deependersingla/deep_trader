@@ -49,11 +49,13 @@ def new_stage_data(action, portfolio, old_state, new_state, portfolio_value, don
     #buying
     if action == 1:
         #old_price = old_state[1]
+        #Todo: Add transaction cost here also 
         portfolio_value -= price
         portfolio += 1
     #selling
     elif action == 2:
         #old_price = old_state[2]
+         #Todo: Add transaction cost here also 
         portfolio_value += price
         portfolio -= 1
     elif action == 0:
