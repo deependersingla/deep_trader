@@ -13,7 +13,7 @@ b) Copy data from https://drive.google.com/file/d/0B6ZrYxEMNGR-MEd5Ti0tTEJjMTQ/v
 b) Create a directory saved_networks inside tensor_reinforcement for saving networks.<br>
 c) python dqn_model.py<br>
 
-#Steps to reproduce PG, currently on OPENAI gym:
+#Steps to reproduce PG
 a) cd tensor-reinforcement <br>
 b) Create a directory saved_networks inside tensor_reinforcement for saving networks.<br>
 c) python pg_model.py
