@@ -49,11 +49,13 @@ def new_stage_data(action, portfolio, old_state, new_state, portfolio_value, don
     #buying
     if action == 1:
         #old_price = old_state[1]
+        #Todo: Add transaction cost here also 
         portfolio_value -= price
         portfolio += 1
     #selling
     elif action == 2:
         #old_price = old_state[2]
+         #Todo: Add transaction cost here also 
         portfolio_value += price
         portfolio -= 1
     elif action == 0:
@@ -75,7 +77,7 @@ def new_stage_data(action, portfolio, old_state, new_state, portfolio_value, don
 
 def show_trader_path(actions, episode_data, portfolio_list, portfolio_value_list, reward_list):
     i = 0
-    print("Action, Average Price, Portfolio, Portfolio Value, Reward")
+    #print("Action, Average Price, Portfolio, Portfolio Value, Reward")
     for index, action in enumerate(actions):
         episode = episode_data[index]
         action_name = action_map[actions[index]]
@@ -84,10 +86,10 @@ def show_trader_path(actions, episode_data, portfolio_list, portfolio_value_list
         portfolio_value = portfolio_value_list[index]
         i += 1
         reward = reward_list[index]
-        print(action_name, price, portfolio, portfolio_value, reward)
-    print("last price:")
+        #print(action_name, price, portfolio, portfolio_value, reward)
+    #print("last price:")
     episode = episode_data[i]
     last_price = episodic_data.data_average_price(data_dict, episode)
-    print(last_price)
+    #print(last_price)
     reward = (portfolio_value_list[-1] + portfolio_list[-1]*last_price)
     return reward 

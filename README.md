@@ -1,19 +1,21 @@
 #Reinforcement-trading
-This project uses Reinforcement learning on stock market and agent tries to learn trading. The goal is to check if the agent can learn to read tape. The project is dedicated to hero in life great Jesse Livermore and one of the best human i know in life Ryan Booth https://github.com/ryanabooth.
+This project uses Reinforcement learning on stock market and agent tries to learn trading. The goal is to check if the agent can learn to read tape. The project is dedicated to hero in life great Jesse Livermore and one of the best human i know  Ryan Booth https://github.com/ryanabooth.
 
-One Point to note, the code inside tensor-reinforcement is the latest code and you should be reading/running if you are interested in project. Leave other directories, I am not working on them for now<br>
+One Point to note, the code inside tensor-reinforcement is the latest code and you should be reading/running if you are interested in project. Leave other directories, I am not working on them for now<br>. To read my thought journal during ongoing development https://github.com/deependersingla/deep_trader/blob/master/deep_thoughts.md <br>
+
+Before this I have used RL here: http://somedeepthoughtsblog.tumblr.com/post/134793589864/maths-versus-computation
 
 If you are working on ML on stocks investing/trading and wish to collaborate please feel free to email me deepender281190@gmail.com
 
 #Steps to reproduce DQN
 a) cd tensor-reinforcement <br>
 b) Copy data from https://drive.google.com/file/d/0B6ZrYxEMNGR-MEd5Ti0tTEJjMTQ/view into tensor-reinforcement directory and https://drive.google.com/file/d/0B6ZrYxEMNGR-Q0YwWWVpVnJ3YmM/view?usp=sharing.<br>
-b) Create a directory saved_networks inside tensor_supervised for saving networks.<br>
+b) Create a directory saved_networks inside tensor_reinforcement for saving networks.<br>
 c) python dqn_model.py<br>
 
-#Steps to reproduce PG, currently on OPENAI gym:
+#Steps to reproduce PG
 a) cd tensor-reinforcement <br>
-b) Create a directory saved_networks inside tensor_supervised for saving networks.<br>
+b) Create a directory saved_networks inside tensor_reinforcement for saving networks.<br>
 c) python pg_model.py
 
 
@@ -21,7 +23,7 @@ c) python pg_model.py
 Process:<br>
 Intially I started by using Chainer for the project for both supervised and reinforcement learning.  In middle of it AlphaGo (https://research.googleblog.com/2016/01/alphago-mastering-ancient-game-of-go.html) came because of it I shifted to read Sutton book on RL (https://webdocs.cs.ualberta.ca/~sutton/book/the-book.html), AlphaGo and related papers, David Silver lectures (http://www0.cs.ucl.ac.uk/staff/d.silver/web/Teaching.html, they are great). 
 
-I am coming back to project after some time a lot has changed. All the cool kids even DeepMind (the gods) have started using TensorFlow. Hence, I am ditching Chainer and will use Tensorflow from now. Exciting times ahead. Before this, I used RL here: http://somedeepthoughtsblog.tumblr.com/post/134793589864/maths-versus-computation
+I am coming back to project after some time a lot has changed. All the cool kids even DeepMind (the gods) have started using TensorFlow. Hence, I am ditching Chainer and will use Tensorflow from now. Exciting times ahead. 
 
 
 #Policy network
