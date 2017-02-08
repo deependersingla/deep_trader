@@ -5,7 +5,7 @@ One Point to note, the code inside tensor-reinforcement is the latest code and y
 
 Before this I have used RL here: http://somedeepthoughtsblog.tumblr.com/post/134793589864/maths-versus-computation
 
-If you are working on ML on stocks investing/trading and wish to collaborate please feel free to email me deepender281190@gmail.com
+If you are working on using ML in investing/trading and wish to collaborate please feel free to email me deepender281190@gmail.com. My latest project https://github.com/deependersingla/deep_portfolio, only first version is open sourced.
 
 #Steps to reproduce DQN
 a) cd tensor-reinforcement <br>
