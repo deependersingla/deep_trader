@@ -1,6 +1,6 @@
 
 
-#Description
+# Description
 
 The purpose of this file is to keep track of why I am making changes, since I am working alone on this project. This file is also a journal for me to brain storm. 
 Let's start...
@@ -46,7 +46,7 @@ I am trying PGN model now on the stocks. The major problem here is that the rand
 2. Find out which action lead to positive reinforcement in test data and train first a supervised network based on that. Use the network here then to train RL network.  I have started this on development branch of project.
 3. I have started training network first on supervised learning. This is actually more exciting than i thought because I can't just lablel data by seeing next price on time interval. Entire episode price after a particular time interval matters as you can hold also. I have to first write a program which will take an episode price and then will give a list of actions to take to maximize profit generation. Lets go hunting.
 
-###PG Improving:
+### PG Improving:
 
 The idea to use use supervised network first actually worked and now PG is also generating profit on the test data. The model is not just holding stocks its improving also.
 
