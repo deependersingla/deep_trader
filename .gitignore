@@ -1,0 +1,7 @@
+.idea/*
+**/*.ipynb
+**/*.pkl
+**/*.pyc
+
+tensor-reinforcement/logs/**
+tensor-reinforcement/saved_networks/**

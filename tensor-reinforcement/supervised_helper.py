@@ -11,7 +11,7 @@ def generate_actions_from_price_data(prices):
         if profit >= old_profit:
             old_profit = profit
             golden_actions = result_list
-    print(golden_actions)
+    # print(golden_actions)
     return golden_actions
 
 
