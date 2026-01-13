@@ -1,4 +1,5 @@
 import os
+import joblib
 import sys
 import numpy as np
 import tensorflow as tf
@@ -38,6 +39,12 @@ def main():
     # Scale features globally for the agent
     scaler = StandardScaler()
     state_data = scaler.fit_transform(raw_features)
+    
+    # Save Scaler for Live Trading
+    import joblib
+    scaler_path = os.path.join(MODELS_DIR, 'scaler.pkl')
+    joblib.dump(scaler, scaler_path)
+    print(f"Scaler saved to {scaler_path}")
     
     # Price data for the environment simulation
     price_data = df['Close'].values
