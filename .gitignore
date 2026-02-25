@@ -1,0 +1,84 @@
+# ==========================
+# Python
+# ==========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ==========================
+# Virtual Environment
+# ==========================
+.venv/
+venv/
+env/
+
+# ==========================
+# Datasets (CSV volumineux)
+# ==========================
+*.csv
+data/EURUSD_M1_2012_2025.csv
+ib/csv_data/
+mt/csv_data/
+
+# ==========================
+# Modèles entraînés / Poids
+# ==========================
+*.h5
+*.weights.h5
+*.pkl
+*.pth
+*.pt
+*.ckpt
+*.onnx
+saved_networks*/
+tensor-reinforcement/saved_networks_modern/
+tensor-reinforcement/saved_networks_modern_pg/
+tensor-reinforcement/saved_networks_rainbow/
+
+# ==========================
+# Logs & Résultats
+# ==========================
+*.log
+training_results.csv
+
+# ==========================
+# IDE / Éditeurs
+# ==========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ==========================
+# OS
+# ==========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# ==========================
+# Jupyter Notebook
+# ==========================
+.ipynb_checkpoints/
+
+# ==========================
+# Distribution / Build
+# ==========================
+dist/
+build/
+*.egg-info/
+*.egg
+
+# ==========================
+# Divers
+# ==========================
+.env
+.env.local
+*.bak
+*.tmp

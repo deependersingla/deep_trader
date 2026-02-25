@@ -21,8 +21,8 @@ def prepare_data():
     supervised_data = {}
     output_data = []
     new_data_list  = []
-    files = glob.glob("/home/deep/development/deep_trading/ib/ftr_csv/*.csv")
-    #files = ["/home/deep/development/deep_trading/ib/csv_data/KSCL.csv"]
+    files = glob.glob(os.path.join(os.path.dirname(__file__), "../data/EURUSD_M1_2012_2025.csv"))
+    #files = glob.glob("/home/deep/development/deep_trading/ib/ftr_csv/*.csv")
     for file in files:
         stock_data = genfromtxt(file, delimiter=',', dtype=None, names=True)
         output = None
@@ -31,8 +31,8 @@ def prepare_data():
         last_n_data = []
         intial_data = stock_data[0]
         for data in stock_data[1:]:
-            final_value = data['Low']
-            intial_value = intial_data['High']
+            final_value = data['low']
+            intial_value = intial_data['high']
             #can also add transaction fee
             if (final_value > intial_value):
                 output = 1 #should have bought
@@ -43,12 +43,12 @@ def prepare_data():
             #percent_gain = (final_value - intial_value) / intial_value
             #converting into 0 to 1
             #output = ((percent_gain - (-1)) / (1 - (-1)) ) * (1 - 0) + 0
-            final_date = dateutil.parser.parse(data["DateTime"]).date()
-            intial_date = dateutil.parser.parse(intial_data["DateTime"]).date()
-            last_n_data.append([intial_data["Low"], intial_data["High"], intial_data["Close"], intial_data["Open"], intial_data["Volume"]])
+            final_date = dateutil.parser.parse(str(data["timestamp"])).date()
+            intial_date = dateutil.parser.parse(str(intial_data["timestamp"])).date()
+            last_n_data.append([intial_data["low"], intial_data["high"], intial_data["close"], intial_data["open"], intial_data["volume"]])
             if final_date != intial_date:            
-                opening_price = data["Open"]
-                closing_price = intial_data["Close"]
+                opening_price = data["open"]
+                closing_price = intial_data["close"]
                 gain = (opening_price - closing_price) / closing_price
                 #converting into 0 to 1 from -1 to 1
                 #new_value = ( (old_value - old_min) / (old_max - old_min) ) * (new_max - new_min) + new_min
