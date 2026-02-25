@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from common_pipeline import load_and_process_data, get_feature_columns
 
 # Paths
-DATA_PATH = os.path.join(os.path.dirname(__file__), '../data/sorted_data.csv')
+DATA_PATH = os.path.join(os.path.dirname(__file__), '../data/EURUSD_M1_2012_2025.csv')
 MODELS_DIR = os.path.join(os.path.dirname(__file__), 'saved_networks_rainbow')
 
 if not os.path.exists(MODELS_DIR):

@@ -6,7 +6,7 @@ from stock_env import StockTradingEnv
 from modern_pg import PGAgent
 
 # Paths
-DATA_PATH = os.path.join(os.path.dirname(__file__), '../data/sorted_data.csv')
+DATA_PATH = os.path.join(os.path.dirname(__file__), '../data/EURUSD_M1_2012_2025.csv')
 MODELS_DIR = os.path.join(os.path.dirname(__file__), 'saved_networks_modern_pg')
 
 if not os.path.exists(MODELS_DIR):

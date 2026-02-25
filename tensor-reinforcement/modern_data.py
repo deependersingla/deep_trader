@@ -8,104 +8,130 @@ class StockDataLoader:
         """
         Args:
             file_path: Path to the CSV file.
-            sequence_length: Length of history to include in the state (if we were doing sequence input, 
-                             but here we follow the original logic of specific moving averages).
+            sequence_length: Length of history to include in the state.
         """
         self.file_path = file_path
         self.sequence_length = sequence_length
         self.data = None
-        self.state_columns = []
+        self.state_data = None
+        self.price_data = None
+        self.dates = None
     
     def load_csv(self):
         """
         Loads the CSV and parses dates.
+        Expected columns: timestamp, open, high, low, close, volume (lowercase)
         """
         if not os.path.exists(self.file_path):
             raise FileNotFoundError(f"File not found: {self.file_path}")
             
-        # Reading sorted_data.csv format: Index, DateTime, Open, Close, Low, High, Volume Traded
-        # Note: The file seems to have "Nifty" as a column in some rows based on the old script?
-        # Let's inspect the first few lines of real data if possible, but assuming standard CSV for now.
-        
-        # We'll use the column names from the header.
+        print(f"Loading data from {self.file_path}...")
         self.data = pd.read_csv(self.file_path)
         
+        # Standardize column names to lowercase just in case
+        self.data.columns = [c.lower() for c in self.data.columns]
+        
+        # Parse timestamp
+        if 'timestamp' in self.data.columns:
+            self.data['timestamp'] = pd.to_datetime(self.data['timestamp'])
+            self.data.sort_values('timestamp', inplace=True)
+        elif 'datetime' in self.data.columns:
+            # Fallback for old format if needed, but primary target is new file
+            self.data['timestamp'] = pd.to_datetime(self.data['datetime'])
+            self.data.sort_values('timestamp', inplace=True)
+            
         # Ensure we have numerical columns
-        cols_to_use = ['Open', 'Close', 'Low', 'High']
-        if 'Volume Traded' in self.data.columns:
-            cols_to_use.append('Volume Traded')
+        cols_to_use = ['open', 'close', 'low', 'high']
+        if 'volume' in self.data.columns:
+            cols_to_use.append('volume')
             
         for col in cols_to_use:
             self.data[col] = pd.to_numeric(self.data[col], errors='coerce')
             
         self.data.dropna(subset=cols_to_use, inplace=True)
         self.data.reset_index(drop=True, inplace=True)
-        print(f"Loaded {len(self.data)} rows from {self.file_path}")
+        print(f"Loaded {len(self.data)} rows. Date range: {self.data['timestamp'].min()} to {self.data['timestamp'].max()}")
+
+    def calculate_rsi(self, series, period=14):
+        delta = series.diff()
+        gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+
+        rs = gain / loss
+        rsi = 100 - (100 / (1 + rs))
+        return rsi.fillna(50) # Neutral fill
+
+    def calculate_macd(self, series, fast=12, slow=26, signal=9):
+        exp1 = series.ewm(span=fast, adjust=False).mean()
+        exp2 = series.ewm(span=slow, adjust=False).mean()
+        macd = exp1 - exp2
+        signal_line = macd.ewm(span=signal, adjust=False).mean()
+        return macd, signal_line
 
     def preprocess(self):
         """
-        Generates features similar to the original:
-        - Normalized values
-        - Rolling averages
+        Generates features:
+        - Rolling averages relative to price
+        - Returns
+        - RSI
+        - MACD
         """
-        # We focus on 'Close' price for the "price" action, but the original used multiple columns.
-        # Original: temp = [data[2], data[3], data[4], data[5],data[8]] -> Open, High, Low, Close, Volume?
-        # Let's create a feature vector from these.
-        
-        feature_cols = ['Open', 'High', 'Low', 'Close']
-        if 'Volume Traded' in self.data.columns:
-            feature_cols.append('Volume Traded')
+        feature_cols = ['open', 'high', 'low', 'close']
+        if 'volume' in self.data.columns:
+            feature_cols.append('volume')
             
-        df_features = self.data[feature_cols].copy()
+        df_features = self.data.copy()
 
-        # The original code did complex normalization: accumulate data, find mean, divide by mean.
-        # We will use a more standard approach: Rolling Window Normalization or Percentage Change.
-        # However, to keep spirit of "trends", we'll calculate rolling averages relative to current price.
-        
         # Compute Moving Averages
-        # Assuming 1 minute intervals (based on "last_one_hour_average = -60")
-        df_features['MA_60'] = df_features['Close'].rolling(window=60).mean()
-        df_features['MA_300'] = df_features['Close'].rolling(window=300).mean() # 5 hours / 1 day roughly?
-        df_features['MA_900'] = df_features['Close'].rolling(window=900).mean() # 3 days?
+        df_features['MA_60'] = df_features['close'].rolling(window=60).mean()
+        df_features['MA_300'] = df_features['close'].rolling(window=300).mean()
+        df_features['MA_900'] = df_features['close'].rolling(window=900).mean()
         
-        # Ratios (Normalization invariant to absolute price level)
-        df_features['Ratio_60'] = df_features['Close'] / df_features['MA_60']
-        df_features['Ratio_300'] = df_features['Close'] / df_features['MA_300']
-        df_features['Ratio_900'] = df_features['Close'] / df_features['MA_900']
+        # Ratios
+        df_features['Ratio_60'] = df_features['close'] / df_features['MA_60']
+        df_features['Ratio_300'] = df_features['close'] / df_features['MA_300']
+        df_features['Ratio_900'] = df_features['close'] / df_features['MA_900']
         
-        # Add simpler returns
-        df_features['Returns'] = df_features['Close'].pct_change()
+        # Returns
+        df_features['Returns'] = df_features['close'].pct_change()
+
+        # Indicators
+        df_features['RSI'] = self.calculate_rsi(df_features['close'])
+        macd, signal = self.calculate_macd(df_features['close'])
+        df_features['MACD'] = macd
+        df_features['Signal'] = signal
         
         df_features.dropna(inplace=True)
         
+        # Verify alignment
+        self.dates = df_features['timestamp'].values
+        self.price_data = df_features['close'].values
+        
         # Final State Vector Columns
-        self.state_data = df_features[['Ratio_60', 'Ratio_300', 'Ratio_900', 'Returns']].values
+        # Adding RSI, MACD, Signal to features
+        X = df_features[['Ratio_60', 'Ratio_300', 'Ratio_900', 'Returns', 'RSI', 'MACD', 'Signal']].values
         
-        # We also need the raw prices for the simulation (calculating portfolio value)
-        self.price_data = df_features['Close'].values
-        
-        # Scale the state data for better NN performance
-        # Handle constant columns to avoid NaNs
-        X = df_features[['Ratio_60', 'Ratio_300', 'Ratio_900', 'Returns']].values
-        
-        # Check for NaNs or Inf introduced by logic
+        # Check for NaNs or Inf
         if np.any(np.isnan(X)) or np.any(np.isinf(X)):
             print("Warning: NaNs/Infs found in features. Replacing with 0.")
             X = np.nan_to_num(X)
 
         self.state_data = scale(X)
         if np.any(np.isnan(self.state_data)):
-             print("Warning: NaNs generated during scaling (constant columns?). Fixing.")
+             print("Warning: NaNs generated during scaling. Fixing.")
              self.state_data = np.nan_to_num(self.state_data)
         
         print(f"Preprocessing complete. State shape: {self.state_data.shape}")
         
     def get_data(self):
-        return self.state_data, self.price_data
+        """
+        Returns processed data and associated dates/prices.
+        """
+        return self.state_data, self.price_data, self.dates
 
 if __name__ == "__main__":
     # Quick test
-    loader = StockDataLoader("../data/sorted_data.csv")
+    loader = StockDataLoader("../data/EURUSD_M1_2012_2025.csv")
     try:
         loader.load_csv()
         loader.preprocess()

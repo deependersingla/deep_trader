@@ -10,7 +10,7 @@ class StockTradingEnv(gym.Env):
     """
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, state_data, price_data, initial_balance=10000, episode_length=1000):
+    def __init__(self, state_data, price_data, initial_balance=10000, episode_length=1000, commission=0.0001):
         super(StockTradingEnv, self).__init__()
         
         self.state_data = state_data
@@ -18,6 +18,7 @@ class StockTradingEnv(gym.Env):
         self.total_data_len = len(price_data)
         self.initial_balance = initial_balance
         self.episode_length = episode_length
+        self.commission = commission
         
         # Actions: 0=Hold, 1=Buy, 2=Sell
         self.action_space = spaces.Discrete(3)
@@ -58,13 +59,13 @@ class StockTradingEnv(gym.Env):
         idx = self._current_global_idx()
         current_price = self.price_data[idx]
         
-        # Execute Action
+        # Execute Action with Commission
         if action == 1: # Buy
             self.shares_held += 1
-            self.balance -= current_price
+            self.balance -= current_price * (1 + self.commission)
         elif action == 2: # Sell
             self.shares_held -= 1
-            self.balance += current_price
+            self.balance += current_price * (1 - self.commission)
             
         # Move to next step
         self.current_step_idx += 1
